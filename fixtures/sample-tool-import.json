@@ -1,0 +1,29 @@
+{
+  "source": "claude_local_scan",
+  "generated_at": "2026-06-18T10:00:00+08:00",
+  "tools": [
+    {
+      "name": "Playwright MCP",
+      "slug": "playwright-mcp",
+      "type": "mcp",
+      "status": "configured",
+      "summary": "用于浏览器自动化、页面测试、截图和 E2E 验收。",
+      "homepage_url": "",
+      "install_command": "claude mcp add -s user playwright -- npx -y @playwright/mcp",
+      "verify_command": "claude mcp get playwright",
+      "visibility": "public",
+      "is_skill_candidate": false,
+      "is_runbook_candidate": true,
+      "categories": ["测试工具", "MCP"],
+      "tags": ["playwright", "browser", "e2e"],
+      "guides": [
+        {
+          "title": "使用指南",
+          "guide_type": "usage",
+          "visibility": "public",
+          "content_markdown": "# Playwright MCP 使用指南\n\n用于打开网页、点击按钮、填写表单、截图和检查控制台错误。"
+        }
+      ]
+    }
+  ]
+}
