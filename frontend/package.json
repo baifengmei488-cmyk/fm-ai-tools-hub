@@ -20,6 +20,7 @@
     "rehype-sanitize": "latest"
   },
   "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.1",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "eslint": "latest",
