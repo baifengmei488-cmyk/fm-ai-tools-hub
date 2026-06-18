@@ -66,7 +66,7 @@ test('public users can browse imported public tool details', async ({ page }) =>
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'ToolVault' })).toBeVisible();
 
-  await page.getByRole('link', { name: '工具库' }).click();
+  await page.getByRole('navigation').getByRole('link', { name: '工具库', exact: true }).click();
   await expect(page.getByRole('heading', { name: '工具库' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Playwright MCP' })).toBeVisible();
 
@@ -98,7 +98,7 @@ test('private imported tools stay hidden publicly and visible to admin', async (
   await page.getByRole('button', { name: '执行导入' }).click();
   await expect(page.getByRole('status')).toContainText('导入成功');
 
-  await page.getByRole('link', { name: '工具库' }).click();
+  await page.getByRole('navigation').getByRole('link', { name: '工具库', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Playwright MCP' })).toBeVisible();
   await expect(page.getByText('Private Runbook')).toHaveCount(0);
 
