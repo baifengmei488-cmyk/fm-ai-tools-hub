@@ -6,7 +6,10 @@ SENSITIVE_KEY_RE = re.compile(r"(token|password|passwd|secret|cookie|private_key
 SECRET_ASSIGNMENT_RE = re.compile(
     r"(?i)(token|password|passwd|secret|cookie|access[_-]?key|mysql_pass)\s*[=:]\s*['\"]?([^\s'\"]+)"
 )
-MYSQL_INLINE_PASSWORD_RE = re.compile(r"-p(?!\s)([^\s]+)")
+MYSQL_INLINE_PASSWORD_RE = re.compile(r"(?<!\S)-p(?![\s-])([^\s]+)")
+PEM_PRIVATE_KEY_RE = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")
+GITHUB_TOKEN_RE = re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{20,}\b")
+BEARER_TOKEN_RE = re.compile(r"(?i)\bBearer\s+([A-Za-z0-9._~+/=-]{20,})\b")
 PLACEHOLDER_VALUES = {
     "YOUR_TOKEN",
     "YOUR_PASSWORD",
@@ -39,6 +42,14 @@ def _scan_string(path: str, value: str) -> list[SensitiveFinding]:
     mysql_match = MYSQL_INLINE_PASSWORD_RE.search(value)
     if mysql_match and not _is_placeholder(mysql_match.group(1)):
         findings.append(SensitiveFinding(path=path, reason="inline mysql password"))
+    if PEM_PRIVATE_KEY_RE.search(value):
+        findings.append(SensitiveFinding(path=path, reason="private key block"))
+    github_match = GITHUB_TOKEN_RE.search(value)
+    if github_match and not _is_placeholder(github_match.group(0)):
+        findings.append(SensitiveFinding(path=path, reason="github token"))
+    bearer_match = BEARER_TOKEN_RE.search(value)
+    if bearer_match and not _is_placeholder(bearer_match.group(1)):
+        findings.append(SensitiveFinding(path=path, reason="bearer token"))
     return findings
 
 

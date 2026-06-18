@@ -1,7 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class GuideImport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     title: str
     guide_type: str = "usage"
     visibility: str = "public"
@@ -9,6 +11,8 @@ class GuideImport(BaseModel):
 
 
 class ToolImport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     name: str
     slug: str
     type: str
@@ -26,6 +30,8 @@ class ToolImport(BaseModel):
 
 
 class ToolImportPayload(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     source: str
     generated_at: str
     tools: list[ToolImport]
