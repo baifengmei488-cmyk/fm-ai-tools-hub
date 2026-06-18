@@ -48,6 +48,20 @@ def test_sensitive_scan_allows_benign_long_dash_flags_starting_with_p():
     assert find_sensitive_findings(payload) == []
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        "psql -h localhost -p5432 -U postgres",
+        "docker run -p8080:80 nginx",
+        "ssh -p2222 example.com",
+    ],
+)
+def test_sensitive_scan_allows_non_mysql_short_p_port_flags(command):
+    payload = {"tools": [{"name": "Port Example", "install_command": command}]}
+
+    assert find_sensitive_findings(payload) == []
+
+
 def test_import_payload_rejects_extra_fields_before_secret_scanning():
     payload = {
         "source": "test",
@@ -107,6 +121,44 @@ def test_sensitive_scan_flags_github_token_in_markdown():
     assert findings
     assert findings[0].path == "tools[0].guides[0].content_markdown"
     assert "github token" in findings[0].reason
+
+
+def test_sensitive_scan_flags_fine_grained_github_token_in_markdown():
+    payload = {
+        "tools": [
+            {
+                "name": "GitHub Guide",
+                "guides": [
+                    {
+                        "content_markdown": "Do not paste github_pat_11ABCDEFG0abcdefghijklmnopqrstuvwxyz_1234567890abcdef1234567890abcdef into docs.",
+                    }
+                ],
+            }
+        ]
+    }
+
+    findings = find_sensitive_findings(payload)
+
+    assert findings
+    assert findings[0].path == "tools[0].guides[0].content_markdown"
+    assert "github token" in findings[0].reason
+
+
+@pytest.mark.parametrize(
+    "assignment",
+    [
+        "OPENAI_API_KEY=sk-proj-1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUV",
+        "API_KEY=tv_1234567890abcdefghijklmnopqrstuvwxyzABCDEF",
+    ],
+)
+def test_sensitive_scan_flags_api_key_assignments(assignment):
+    payload = {"tools": [{"name": "API Guide", "summary": f"Configure with {assignment}"}]}
+
+    findings = find_sensitive_findings(payload)
+
+    assert findings
+    assert findings[0].path == "tools[0].summary"
+    assert "secret assignment" in findings[0].reason
 
 
 def test_sensitive_scan_flags_bearer_token_in_prose():

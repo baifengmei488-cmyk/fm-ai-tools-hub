@@ -1,15 +1,19 @@
 from dataclasses import dataclass
 import re
+import shlex
 from typing import Any
 
-SENSITIVE_KEY_RE = re.compile(r"(token|password|passwd|secret|cookie|private_key|accesskey|access_key)", re.I)
-SECRET_ASSIGNMENT_RE = re.compile(
-    r"(?i)(token|password|passwd|secret|cookie|access[_-]?key|mysql_pass)\s*[=:]\s*['\"]?([^\s'\"]+)"
+SENSITIVE_KEY_RE = re.compile(
+    r"(token|password|passwd|secret|cookie|private_key|api_key|apikey|accesskey|access_key)", re.I
 )
-MYSQL_INLINE_PASSWORD_RE = re.compile(r"(?<!\S)-p(?![\s-])([^\s]+)")
+SECRET_ASSIGNMENT_RE = re.compile(
+    r"(?i)(openai[_-]?api[_-]?key|api[_-]?key|apikey|secret_key|private_key|access[_-]?key|"
+    r"mysql_pass|password|passwd|secret|token|cookie)\s*[=:]\s*['\"]?([^\s'\"]+)"
+)
 PEM_PRIVATE_KEY_RE = re.compile(r"-----BEGIN [A-Z ]*PRIVATE KEY-----")
-GITHUB_TOKEN_RE = re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{20,}\b")
+GITHUB_TOKEN_RE = re.compile(r"\b(?:gh[pousr]_|github_pat_)[A-Za-z0-9_]{20,}\b")
 BEARER_TOKEN_RE = re.compile(r"(?i)\bBearer\s+([A-Za-z0-9._~+/=-]{20,})\b")
+MYSQL_COMMANDS = {"mariadb", "mysql"}
 PLACEHOLDER_VALUES = {
     "YOUR_TOKEN",
     "YOUR_PASSWORD",
@@ -33,14 +37,37 @@ def _is_placeholder(value: str) -> bool:
     return lowered.startswith("your_") or lowered.startswith("example_") or lowered.startswith("change_me")
 
 
+def _is_mysql_command(value: str) -> bool:
+    try:
+        command_parts = shlex.split(value)
+    except ValueError:
+        return False
+    if not command_parts:
+        return False
+    return command_parts[0].rsplit("/", maxsplit=1)[-1] in MYSQL_COMMANDS
+
+
+def _find_mysql_inline_password(value: str) -> str | None:
+    if not _is_mysql_command(value):
+        return None
+    try:
+        command_parts = shlex.split(value)
+    except ValueError:
+        return None
+    for part in command_parts[1:]:
+        if part.startswith("-p") and len(part) > 2:
+            return part[2:]
+    return None
+
+
 def _scan_string(path: str, value: str) -> list[SensitiveFinding]:
     findings: list[SensitiveFinding] = []
     for match in SECRET_ASSIGNMENT_RE.finditer(value):
         assigned = match.group(2).strip()
         if not _is_placeholder(assigned):
             findings.append(SensitiveFinding(path=path, reason=f"secret assignment for {match.group(1)}"))
-    mysql_match = MYSQL_INLINE_PASSWORD_RE.search(value)
-    if mysql_match and not _is_placeholder(mysql_match.group(1)):
+    mysql_password = _find_mysql_inline_password(value)
+    if mysql_password and not _is_placeholder(mysql_password):
         findings.append(SensitiveFinding(path=path, reason="inline mysql password"))
     if PEM_PRIVATE_KEY_RE.search(value):
         findings.append(SensitiveFinding(path=path, reason="private key block"))
