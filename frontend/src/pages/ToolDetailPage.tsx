@@ -4,17 +4,61 @@ import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from 'rehype-sanitize';
 import { Tool, apiGet } from '../api/client';
 
+type ToolDetailStatus = 'loading' | 'error' | 'not-found' | 'ready';
+
+function isNotFoundError(error: unknown) {
+  return error instanceof Error && error.message.includes('Request failed: 404');
+}
+
 export function ToolDetailPage() {
   const { slug } = useParams();
   const [tool, setTool] = useState<Tool | null>(null);
+  const [status, setStatus] = useState<ToolDetailStatus>('loading');
 
   useEffect(() => {
-    if (slug) {
-      apiGet<Tool>(`/api/tools/${slug}`).then(setTool).catch(() => setTool(null));
+    let isActive = true;
+
+    if (!slug) {
+      setTool(null);
+      setStatus('not-found');
+      return () => {
+        isActive = false;
+      };
     }
+
+    setTool(null);
+    setStatus('loading');
+
+    apiGet<Tool>(`/api/tools/${slug}`)
+      .then((loadedTool) => {
+        if (!isActive) {
+          return;
+        }
+        setTool(loadedTool);
+        setStatus('ready');
+      })
+      .catch((error: unknown) => {
+        if (!isActive) {
+          return;
+        }
+        setTool(null);
+        setStatus(isNotFoundError(error) ? 'not-found' : 'error');
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, [slug]);
 
-  if (!tool) {
+  if (status === 'loading') {
+    return <p className="text-slate-600">正在加载工具...</p>;
+  }
+
+  if (status === 'error') {
+    return <p className="text-slate-600">工具加载失败，请稍后重试。</p>;
+  }
+
+  if (status === 'not-found' || !tool) {
     return <p className="text-slate-600">未找到公开工具。</p>;
   }
 
