@@ -1,0 +1,207 @@
+{
+  "source": "claude_local_scan",
+  "generated_at": "2026-06-22T00:00:00+08:00",
+  "tools": [
+    {
+      "name": "Claude Code",
+      "slug": "claude-code",
+      "type": "cli",
+      "status": "installed",
+      "summary": "Anthropic 的本地 AI 编程助手 CLI，用于在项目中理解代码、编辑文件、运行验证并协作完成软件工程任务。",
+      "homepage_url": "https://docs.anthropic.com/en/docs/claude-code",
+      "install_command": "npm install -g @anthropic-ai/claude-code",
+      "verify_command": "claude --version",
+      "visibility": "public",
+      "is_skill_candidate": false,
+      "is_runbook_candidate": true,
+      "categories": [
+        "AI 工具",
+        "CLI 工具",
+        "编程助手"
+      ],
+      "tags": [
+        "claude",
+        "coding-agent",
+        "cli",
+        "anthropic"
+      ],
+      "guides": [
+        {
+          "title": "使用指南",
+          "guide_type": "usage",
+          "visibility": "public",
+          "content_markdown": "# Claude Code 使用指南\n\nClaude Code 是本地项目里的 AI 编程助手，适合在仓库中阅读需求、理解代码、修改文件、运行验证并交付带证据的结果。\n\n## 常用场景\n\n- 阅读需求、项目文档和代码结构，说明将要完成的工作。\n- 实际修改代码或文档，并保持变更范围清晰。\n- 运行项目命令、测试、构建或启动应用来验证结果。\n- 通过浏览器、CLI 或日志观察真实行为，并在交付时报告验证证据。\n\n## 安装示例\n\n```bash\nnpm install -g @anthropic-ai/claude-code\n```\n\n## 验证安装\n\n```bash\nclaude --version\n```\n\n## ToolVault 中的使用方式\n\n可以把 Claude Code 作为 AI 编程助手记录在 ToolVault 中，并在团队 runbook 中关联常见开发流程：先确认需求和约束，再执行代码或文档改动，随后运行测试、构建、应用启动或浏览器验证，最后说明执行过的命令、观察到的结果和剩余风险。\n\n## 安全注意\n\n不要把真实生产凭证、私钥、会话信息或敏感业务数据写入提示词、导入文件或公开文档。"
+        }
+      ]
+    },
+    {
+      "name": "Playwright MCP",
+      "slug": "playwright-mcp",
+      "type": "mcp_server",
+      "status": "configured",
+      "summary": "用于让 Claude 通过浏览器观察和操作真实网页的 MCP 服务，适合 UI 验证、E2E 走查、截图、控制台检查和网络请求检查。",
+      "homepage_url": "https://www.npmjs.com/package/@playwright/mcp",
+      "install_command": "claude mcp add -s user playwright -- npx -y @playwright/mcp",
+      "verify_command": "claude mcp get playwright",
+      "visibility": "public",
+      "is_skill_candidate": false,
+      "is_runbook_candidate": true,
+      "categories": [
+        "AI 工具",
+        "MCP 服务",
+        "浏览器自动化",
+        "测试验证"
+      ],
+      "tags": [
+        "playwright",
+        "mcp",
+        "browser",
+        "e2e",
+        "ui-testing"
+      ],
+      "guides": [
+        {
+          "title": "Playwright MCP 使用指南",
+          "guide_type": "usage",
+          "visibility": "public",
+          "content_markdown": "# Playwright MCP 使用指南\n\nPlaywright MCP 用于让 Claude 通过浏览器观察和操作真实网页。它适合做 UI 验证、E2E 走查、截图、表单填写、导航、控制台错误检查和网络请求检查。\n\n## 常用能力\n\n- 打开本地或远程页面并读取可访问性快照。\n- 点击按钮、链接和表单控件。\n- 填写输入框、选择下拉项、上传文件。\n- 截图并把截图路径作为验证证据。\n- 查看浏览器控制台错误和网络请求。\n\n## 安装示例\n\n```bash\nclaude mcp add -s user playwright -- npx -y @playwright/mcp\n```\n\n## 验证配置\n\n```bash\nclaude mcp get playwright\n```\n\n## ToolVault 中的使用方式\n\n验证前端功能时，先启动 ToolVault 后端和前端，再用 Playwright MCP 打开页面。确认列表、搜索、详情页和 Markdown 渲染都从真实页面观察到，而不是只看测试或 API 返回。\n\n## 安全注意\n\n不要在浏览器中输入真实生产凭证。截图前检查页面中是否展示会话信息、密钥或个人敏感信息。"
+        }
+      ]
+    },
+    {
+      "name": "Time MCP",
+      "slug": "time-mcp",
+      "type": "mcp_server",
+      "status": "configured",
+      "summary": "为 Claude 提供当前时间、日期、时区转换和相对时间计算能力的 MCP 服务，适合计划任务、时间戳核对和跨时区协作。",
+      "homepage_url": "https://www.npmjs.com/package/time-mcp",
+      "install_command": "claude mcp add -s user time -- npx -y time-mcp",
+      "verify_command": "claude mcp get time",
+      "visibility": "public",
+      "is_skill_candidate": false,
+      "is_runbook_candidate": true,
+      "categories": [
+        "AI 工具",
+        "MCP 服务",
+        "时间工具"
+      ],
+      "tags": [
+        "time",
+        "mcp",
+        "timezone",
+        "scheduler"
+      ],
+      "guides": [
+        {
+          "title": "Time MCP 使用指南",
+          "guide_type": "usage",
+          "visibility": "public",
+          "content_markdown": "# Time MCP 使用指南\n\nTime MCP 为 Claude 提供时间和日期相关能力，适合需要准确当前时间、跨时区换算或相对时间描述的工作流。\n\n## 常用能力\n\n- 查询指定时区的当前日期和时间。\n- 在两个 IANA 时区之间转换时间。\n- 计算相对时间，例如某个时间距离现在多久。\n- 获取月份天数、周序号或时间戳。\n\n## 安装示例\n\n```bash\nclaude mcp add -s user time -- npx -y time-mcp\n```\n\n## 验证配置\n\n```bash\nclaude mcp get time\n```\n\n## ToolVault 中的使用方式\n\n可把 Time MCP 作为辅助型 MCP 服务记录，用于解释排期、审查日志时间、安排提醒或把用户给出的时间转换为明确日期。\n\n## 安全注意\n\n时间换算本身通常不需要敏感数据。记录排期时避免把未公开发布计划、客户名称或内部会议细节写入公开指南。"
+        }
+      ]
+    },
+    {
+      "name": "GitHub MCP",
+      "slug": "github-mcp",
+      "type": "mcp_server",
+      "status": "configured",
+      "summary": "让 Claude 通过 MCP 访问 GitHub 仓库、issue、pull request 和代码搜索等协作对象的服务，适合代码审查和项目管理工作流。",
+      "homepage_url": "https://github.com/modelcontextprotocol/servers",
+      "install_command": "claude mcp add -s user github -- npx -y @modelcontextprotocol/server-github",
+      "verify_command": "claude mcp get github",
+      "visibility": "public",
+      "is_skill_candidate": false,
+      "is_runbook_candidate": true,
+      "categories": [
+        "AI 工具",
+        "MCP 服务",
+        "代码协作",
+        "项目管理"
+      ],
+      "tags": [
+        "github",
+        "mcp",
+        "pull-requests",
+        "issues",
+        "code-review"
+      ],
+      "guides": [
+        {
+          "title": "GitHub MCP 使用指南",
+          "guide_type": "usage",
+          "visibility": "public",
+          "content_markdown": "# GitHub MCP 使用指南\n\nGitHub MCP 让 Claude 能通过受控工具读取和管理 GitHub 协作对象，例如仓库内容、issue、pull request、评审评论和状态检查。\n\n## 常用能力\n\n- 查看 issue、pull request、变更文件和评审评论。\n- 创建 issue、分支或 pull request。\n- 搜索仓库、代码、用户和协作记录。\n- 读取 pull request 状态，辅助判断是否可合并。\n\n## 安装示例\n\n```bash\nclaude mcp add -s user github -- npx -y @modelcontextprotocol/server-github\n```\n\n## 验证配置\n\n```bash\nclaude mcp get github\n```\n\n## ToolVault 中的使用方式\n\n可把 GitHub MCP 作为代码协作集成记录，并在 runbook 中说明何时使用它查看 PR、收集评审上下文或同步 issue 状态。\n\n## 安全注意\n\n为 GitHub 集成配置访问凭证时应遵循最小权限原则。不要把真实凭证值、私有仓库内容或未公开漏洞细节写入公开导入数据。"
+        }
+      ]
+    },
+    {
+      "name": "MySQL MCP",
+      "slug": "mysql-mcp",
+      "type": "mcp_server",
+      "status": "configured",
+      "summary": "通过 MCP 为 Claude 提供 MySQL 只读查询能力的数据库辅助服务，适合在授权范围内检查表结构、统计数据和验证业务状态。",
+      "homepage_url": "https://www.npmjs.com/package/mcp-server-mysql",
+      "install_command": "claude mcp add -s user mysql -- npx -y mcp-server-mysql@latest",
+      "verify_command": "claude mcp get mysql",
+      "visibility": "public",
+      "is_skill_candidate": false,
+      "is_runbook_candidate": true,
+      "categories": [
+        "AI 工具",
+        "MCP 服务",
+        "数据库",
+        "数据验证"
+      ],
+      "tags": [
+        "mysql",
+        "mcp",
+        "database",
+        "read-only",
+        "sql"
+      ],
+      "guides": [
+        {
+          "title": "MySQL MCP 使用指南",
+          "guide_type": "usage",
+          "visibility": "public",
+          "content_markdown": "# MySQL MCP 使用指南\n\nMySQL MCP 让 Claude 能在授权范围内执行只读查询，用于理解数据库结构、检查统计数据或验证业务状态。本条目只记录服务已配置，不包含任何连接参数值。\n\n## 常用能力\n\n- 查询表结构和字段信息。\n- 执行只读 SELECT 查询。\n- 对业务状态、计数和简单聚合结果做验证。\n- 辅助排查数据驱动功能的展示问题。\n\n## 安装示例\n\n```bash\nclaude mcp add -s user mysql -- npx -y mcp-server-mysql@latest\n```\n\n## 验证配置\n\n```bash\nclaude mcp get mysql\n```\n\n## ToolVault 中的使用方式\n\n可把 MySQL MCP 作为数据验证 runbook 的依赖项，说明它适合读取非敏感统计结果、核对列表数据或验证迁移后的只读查询。\n\n## 安全注意\n\n不要在 ToolVault 导入文件中记录真实数据库地址、用户名、连接字符串或凭证值。查询时优先使用只读账户，并避免把个人数据或受监管数据复制到公开说明中。"
+        }
+      ]
+    },
+    {
+      "name": "Superpowers Skills",
+      "slug": "superpowers-skills",
+      "type": "skill",
+      "status": "configured",
+      "summary": "一组面向 Claude Code 的工作流技能，覆盖需求澄清、计划编写、计划执行、系统化调试、测试驱动开发、完成前验证、代码评审和并行协作。",
+      "homepage_url": "",
+      "install_command": "",
+      "verify_command": "Check the Claude Code skills list or invoke an installed Superpowers skill in a non-production workspace.",
+      "visibility": "public",
+      "is_skill_candidate": true,
+      "is_runbook_candidate": true,
+      "categories": [
+        "AI 工具",
+        "Claude Skills",
+        "工作流",
+        "质量保障"
+      ],
+      "tags": [
+        "superpowers",
+        "skills",
+        "workflow",
+        "debugging",
+        "tdd",
+        "verification"
+      ],
+      "guides": [
+        {
+          "title": "Superpowers Skills 使用指南",
+          "guide_type": "usage",
+          "visibility": "public",
+          "content_markdown": "# Superpowers Skills 使用指南\n\nSuperpowers Skills 是 Claude Code 的一组流程化能力，可按工作流、质量调试、技能 authoring 和并行协作归为一个 ToolVault 条目，而不是为每个 skill 单独建档。\n\n## 常用能力\n\n- brainstorming：在实现前澄清目标、约束和设计取舍。\n- writing-plans：把需求拆成可执行的实现计划。\n- executing-plans：按计划逐步执行并在每个阶段验证。\n- systematic-debugging：遇到 bug 或异常行为时先复现、定位根因，再修复。\n- test-driven-development：先写失败测试，再实现，再重构。\n- verification-before-completion：声明完成前运行验证并保留证据。\n- requesting-code-review 和 receiving-code-review：把评审反馈转化为具体修复。\n- dispatching-parallel-agents：把独立调查任务拆给并行 agent。\n\n## 安装示例\n\nSuperpowers Skills 通常通过 Claude Code 的插件或本地 skills 机制安装。安装方式取决于团队使用的 Claude Code 配置，ToolVault 中只记录已配置的能力分组，不记录本机私有路径。\n\n## 验证配置\n\n在 Claude Code 中查看可用 skills，或在非生产仓库中调用一个已安装的 Superpowers skill，确认它能加载说明并指导工作流。\n\n## ToolVault 中的使用方式\n\n建议把本条目关联到工程流程 runbook：需求讨论使用 brainstorming，复杂改动先 writing-plans，执行时 executing-plans，缺陷处理用 systematic-debugging，完成前统一用 verification-before-completion。\n\n## 安全注意\n\nskills 会引导 Claude 读取代码、运行命令或调用集成工具。执行前应确认仓库、分支和权限边界，并避免把私有配置值或未公开客户信息写入公开指南。"
+        }
+      ]
+    }
+  ]
+}
