@@ -29,11 +29,33 @@ class ToolImport(BaseModel):
     guides: list[GuideImport] = Field(default_factory=list)
 
 
+class UpdateSourceImport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: str
+    url: str = ""
+    source_type: str
+    checked_at: str
+    note: str = ""
+
+
+class UpdateChangeImport(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    title: str
+    change_type: str
+    description: str
+    tool_slugs: list[str] = Field(default_factory=list)
+    page_paths: list[str] = Field(default_factory=list)
+
+
 class ToolImportPayload(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     source: str
     generated_at: str
+    sources: list[UpdateSourceImport] = Field(default_factory=list)
+    changes: list[UpdateChangeImport] = Field(default_factory=list)
     tools: list[ToolImport]
 
 

@@ -30,6 +30,49 @@ export type Tool = {
   guides: Guide[];
 };
 
+export type UpdateLogSource = {
+  title: string;
+  url: string;
+  source_type: string;
+  checked_at: string;
+  note: string;
+};
+
+export type UpdateLogChange = {
+  title: string;
+  change_type: string;
+  description: string;
+  tool_slugs: string[];
+  page_paths: string[];
+};
+
+export type UpdateLogTool = {
+  name: string;
+  slug: string;
+  type: string;
+  status: string;
+};
+
+export type UpdateLogValidation = {
+  status: string;
+  message: string;
+  sensitive_findings_count: number;
+};
+
+export type UpdateLogEntry = {
+  id: number;
+  source: string;
+  status: string;
+  summary: string;
+  update_time: string;
+  generated_at: string;
+  sources: UpdateLogSource[];
+  changes: UpdateLogChange[];
+  affected_tools: UpdateLogTool[];
+  guide_count: number;
+  validation: UpdateLogValidation;
+};
+
 export type LoginResponse = {
   access_token: string;
   token_type: string;

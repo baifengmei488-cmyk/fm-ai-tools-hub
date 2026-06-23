@@ -14,11 +14,11 @@ def main() -> int:
     payload_path = Path(sys.argv[1])
     payload = ToolImportPayload.model_validate(json.loads(payload_path.read_text(encoding="utf-8")))
     preview = preview_tool_payload(payload)
+    with SessionLocal() as session:
+        result = import_tool_payload(session, payload)
     if preview.sensitive_findings:
         print(json.dumps(preview.model_dump(), ensure_ascii=False, indent=2))
         return 1
-    with SessionLocal() as session:
-        result = import_tool_payload(session, payload)
     print(json.dumps(result.__dict__, ensure_ascii=False, indent=2))
     return 0
 

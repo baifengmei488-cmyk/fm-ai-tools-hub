@@ -1,6 +1,24 @@
 {
   "source": "claude_local_scan",
   "generated_at": "2026-06-18T10:00:00+08:00",
+  "sources": [
+    {
+      "title": "ToolVault E2E fixture",
+      "url": "",
+      "source_type": "local_fixture",
+      "checked_at": "2026-06-23T08:57:00+08:00",
+      "note": "用于验证更新日志页面的公开示例数据。"
+    }
+  ],
+  "changes": [
+    {
+      "title": "更新日志页面测试数据",
+      "change_type": "validation",
+      "description": "为 Playwright MCP 和 uv 生成可展示的更新日志记录。",
+      "tool_slugs": ["playwright-mcp", "uv"],
+      "page_paths": ["/updates", "/tools/playwright-mcp", "/tools/uv"]
+    }
+  ],
   "tools": [
     {
       "name": "Playwright MCP",
@@ -18,10 +36,33 @@
       "tags": ["playwright", "browser", "e2e"],
       "guides": [
         {
-          "title": "使用指南",
+          "title": "Playwright MCP 使用指南",
           "guide_type": "usage",
           "visibility": "public",
-          "content_markdown": "# Playwright MCP 使用指南\n\n用于打开网页、点击按钮、填写表单、截图和检查控制台错误。"
+          "content_markdown": "# Playwright MCP 使用指南\n\n用于打开网页、点击按钮、填写表单、截图和检查控制台错误。\n\n## 适合做什么\n\n| 场景 | 用途 |\n|---|---|\n| UI 验证 | 打开页面并检查关键元素 |\n| 回归测试 | 执行主流程并截图 |"
+        }
+      ]
+    },
+    {
+      "name": "uv",
+      "slug": "uv",
+      "type": "cli",
+      "status": "installed",
+      "summary": "高速 Python 包和工具管理器。",
+      "homepage_url": "",
+      "install_command": "brew install uv",
+      "verify_command": "uv --version",
+      "visibility": "public",
+      "is_skill_candidate": false,
+      "is_runbook_candidate": true,
+      "categories": ["开发工具", "Python"],
+      "tags": ["uv", "python", "tooling"],
+      "guides": [
+        {
+          "title": "uv 使用指南",
+          "guide_type": "usage",
+          "visibility": "public",
+          "content_markdown": "# uv 使用指南\n\nuv 用于管理 Python 项目依赖和 CLI 工具。\n\n## 常用命令\n\n```bash\nuv --version\nuv tool list\n```"
         }
       ]
     }

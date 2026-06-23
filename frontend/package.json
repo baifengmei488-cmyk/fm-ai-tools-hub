@@ -18,6 +18,7 @@
     "react-markdown": "latest",
     "react-router-dom": "latest",
     "rehype-sanitize": "latest",
+    "remark-gfm": "^4.0.1",
     "typescript": "latest",
     "vite": "latest"
   },
