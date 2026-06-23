@@ -54,7 +54,7 @@ export TOOLVAULT_CORS_ORIGINS="http://localhost:$FRONTEND_PORT,http://127.0.0.1:
 
 cd "$ROOT_DIR/backend"
 uv run alembic upgrade head
-uv run python -m app.cli.import_tools ../fixtures/sample-tool-import.json >/dev/null
+uv run python -m app.cli.daily_update --payload ../fixtures/sample-tool-import.json >/dev/null
 uv run uvicorn app.main:app --host 127.0.0.1 --port "$BACKEND_PORT" >"$BACKEND_LOG" 2>&1 &
 BACKEND_PID="$!"
 

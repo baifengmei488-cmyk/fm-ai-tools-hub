@@ -1,4 +1,6 @@
+from datetime import UTC
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
@@ -7,6 +9,7 @@ from app.api.deps import get_session
 from app.models import ImportBatch, Tool
 from app.schemas.update_log import (
     UpdateLogChangeRead,
+    UpdateLogContentPlanItemRead,
     UpdateLogEntryRead,
     UpdateLogSourceRead,
     UpdateLogToolRead,
@@ -14,10 +17,15 @@ from app.schemas.update_log import (
 )
 
 router = APIRouter(prefix="/api/update-logs", tags=["update-logs"])
+BEIJING_TZ = ZoneInfo("Asia/Shanghai")
 
 
 def _as_list(value: Any) -> list[dict[str, Any]]:
     return value if isinstance(value, list) else []
+
+
+def _as_string_list(value: Any) -> list[str]:
+    return [item for item in value] if isinstance(value, list) and all(isinstance(item, str) for item in value) else []
 
 
 def _validation_for(batch: ImportBatch) -> UpdateLogValidationRead:
@@ -29,6 +37,12 @@ def _validation_for(batch: ImportBatch) -> UpdateLogValidationRead:
             sensitive_findings_count=len(findings),
         )
     return UpdateLogValidationRead(status="passed", message="Validation passed", sensitive_findings_count=0)
+
+
+def _beijing_time(value) -> str:
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=UTC)
+    return value.astimezone(BEIJING_TZ).isoformat()
 
 
 def _public_tools(db: Session, raw_tools: list[dict[str, Any]]) -> list[UpdateLogToolRead]:
@@ -52,10 +66,12 @@ def _entry_from_batch(db: Session, batch: ImportBatch) -> UpdateLogEntryRead:
         source=batch.source,
         status=batch.status,
         summary=batch.summary,
-        update_time=batch.created_at,
+        update_time=_beijing_time(batch.created_at),
         generated_at=str(batch.raw_payload.get("generated_at", "")),
+        content_plan=[UpdateLogContentPlanItemRead.model_validate(item) for item in _as_list(batch.raw_payload.get("content_plan"))],
         sources=[UpdateLogSourceRead.model_validate(source) for source in _as_list(batch.raw_payload.get("sources"))],
         changes=[UpdateLogChangeRead.model_validate(change) for change in _as_list(batch.raw_payload.get("changes"))],
+        execution_report=_as_string_list(batch.raw_payload.get("execution_report")),
         affected_tools=_public_tools(db, raw_tools),
         guide_count=sum(len(_as_list(tool.get("guides"))) for tool in raw_tools),
         validation=_validation_for(batch),

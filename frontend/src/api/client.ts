@@ -30,6 +30,61 @@ export type Tool = {
   guides: Guide[];
 };
 
+export type ToolReference = {
+  name: string;
+  slug: string;
+  type: string;
+};
+
+export type HomeHighlight = {
+  title: string;
+  description: string;
+  tools: ToolReference[];
+};
+
+export type WorkflowItem = {
+  title: string;
+  flow: string;
+  prompt: string;
+  tools: ToolReference[];
+};
+
+export type PromptGroup = {
+  title: string;
+  description: string;
+  tools: ToolReference[];
+  prompts: string[];
+};
+
+export type CommandGroup = {
+  title: string;
+  tools: ToolReference[];
+  commands: string[];
+  note: string;
+};
+
+export type GuideChoice = {
+  need: string;
+  tools: ToolReference[];
+};
+
+export type GuideWorkflowTip = {
+  scenario: string;
+  tools: ToolReference[];
+  suggestion: string;
+};
+
+export type PageContent = {
+  home_highlights: HomeHighlight[];
+  workflows: WorkflowItem[];
+  tool_combinations: WorkflowItem[];
+  prompt_groups: PromptGroup[];
+  command_groups: CommandGroup[];
+  guide_choices: GuideChoice[];
+  guide_workflow_tips: GuideWorkflowTip[];
+  guide_safety_notes: string[];
+};
+
 export type UpdateLogSource = {
   title: string;
   url: string;
@@ -38,12 +93,37 @@ export type UpdateLogSource = {
   note: string;
 };
 
+export type UpdateLogContentPlanItem = {
+  page_path: string;
+  page_name: string;
+  section: string;
+  required_content: string[];
+  tool_slugs: string[];
+  status: string;
+};
+
+export type UpdateLogChangeDetail = {
+  tool_slug: string;
+  tool_name: string;
+  page_path: string;
+  section: string;
+  field: string;
+  change_type: string;
+  before: string;
+  after: string;
+  source_titles: string[];
+};
+
 export type UpdateLogChange = {
   title: string;
   change_type: string;
   description: string;
   tool_slugs: string[];
   page_paths: string[];
+  added_tool_slugs: string[];
+  updated_tool_slugs: string[];
+  deleted_tool_slugs: string[];
+  change_details: UpdateLogChangeDetail[];
 };
 
 export type UpdateLogTool = {
@@ -66,8 +146,10 @@ export type UpdateLogEntry = {
   summary: string;
   update_time: string;
   generated_at: string;
+  content_plan: UpdateLogContentPlanItem[];
   sources: UpdateLogSource[];
   changes: UpdateLogChange[];
+  execution_report: string[];
   affected_tools: UpdateLogTool[];
   guide_count: number;
   validation: UpdateLogValidation;

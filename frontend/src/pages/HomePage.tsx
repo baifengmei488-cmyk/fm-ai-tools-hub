@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { ToolLink } from '../components/ToolLink';
+import { usePageContent, type PageContentStatus } from '../api/usePageContent';
+import { ToolRefLink } from '../components/ToolRefLink';
 
 const navigationCards = [
   {
@@ -40,14 +41,22 @@ const navigationCards = [
   },
 ];
 
-const highlights = [
-  ['GitHub MCP', 'Playwright MCP', 'MySQL MCP', '测试结论'],
-  ['OpenSpec', 'Spec Kit', 'Claude Code', 'E2E 验证'],
-  ['Firecrawl MCP', '资料整理', 'FM AI Tools Hub 指南'],
-  ['Frontend Design plugin', '页面优化', '浏览器验收'],
-];
+function HighlightStatus({ status }: { status: PageContentStatus }) {
+  if (status === 'loading') {
+    return <p className="mt-8 rounded-2xl bg-white/10 p-4 text-sm text-slate-200 ring-1 ring-white/10">正在加载每日推荐内容...</p>;
+  }
+
+  if (status === 'error') {
+    return <p className="mt-8 rounded-2xl bg-amber-400/10 p-4 text-sm text-amber-100 ring-1 ring-amber-200/20">每日推荐内容加载失败，请稍后重试。</p>;
+  }
+
+  return null;
+}
 
 export function HomePage() {
+  const { pageContent, status } = usePageContent();
+  const highlights = pageContent.home_highlights;
+
   return (
     <div className="space-y-8">
       <section className="overflow-hidden rounded-3xl bg-slate-950 p-8 text-white shadow-sm">
@@ -64,20 +73,31 @@ export function HomePage() {
             查看工作流
           </Link>
         </div>
-        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {highlights.map((highlight) => (
-            <div key={highlight.join(' → ')} className="rounded-2xl bg-white/10 p-3 text-sm text-slate-100 ring-1 ring-white/10">
-              <span className="flex flex-wrap items-center gap-1.5">
-                {highlight.map((item, index) => (
-                  <span key={`${item}-${index}`} className="inline-flex items-center gap-1.5">
-                    {index > 0 && <span className="text-slate-400">→</span>}
-                    <ToolLink className="font-semibold text-blue-100 underline decoration-blue-300/50 underline-offset-2 hover:text-white" name={item} />
-                  </span>
-                ))}
-              </span>
-            </div>
-          ))}
-        </div>
+        <HighlightStatus status={status} />
+        {status === 'ready' && highlights.length === 0 && (
+          <p className="mt-8 rounded-2xl bg-white/10 p-4 text-sm text-slate-200 ring-1 ring-white/10">暂无每日推荐内容。</p>
+        )}
+        {status === 'ready' && highlights.length > 0 && (
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {highlights.map((highlight) => (
+              <div key={highlight.title} className="rounded-2xl bg-white/10 p-4 text-sm text-slate-100 ring-1 ring-white/10">
+                <p className="font-bold text-white">{highlight.title}</p>
+                <p className="mt-2 leading-6 text-slate-300">{highlight.description}</p>
+                {highlight.tools.length > 0 && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {highlight.tools.map((tool) => (
+                      <ToolRefLink
+                        key={`${highlight.title}-${tool.slug || tool.name}`}
+                        className="rounded-full bg-blue-400/10 px-2.5 py-1 text-xs font-semibold text-blue-100 ring-1 ring-blue-200/20 hover:bg-blue-300/20 hover:text-white"
+                        tool={tool}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">

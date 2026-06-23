@@ -1,0 +1,125 @@
+[
+  {
+    "page_path": "/tools",
+    "page_name": "工具库列表页",
+    "section": "工具卡片",
+    "required_content": [
+      "每张工具卡片展示工具名称、摘要、类型标识、关键标签和当前配置状态。",
+      "工具类型筛选位于列表上方左侧，默认展示全部，并覆盖当前 payload 内所有工具类型。",
+      "卡片入口必须能跳转到对应工具详情页。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  },
+  {
+    "page_path": "/tools/{slug}",
+    "page_name": "工具详情页",
+    "section": "基本信息",
+    "required_content": [
+      "说明这个工具能帮助用户完成什么工作，而不只写安装方式。",
+      "列出适用场景、典型输入、典型输出和适合配合使用的工具。",
+      "有官方主页或公开文档时记录安全的公开来源。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  },
+  {
+    "page_path": "/tools/{slug}",
+    "page_name": "工具详情页",
+    "section": "使用指南",
+    "required_content": [
+      "先读取当前工具详情页已有使用指南，再只用公开官方或明确授权的新资料做对比。",
+      "保留仍然正确且有用的现有内容，只补充新增能力、更新过时步骤、纠正错误描述或扩展缺失场景。",
+      "使用指南必须回答：安装后怎么使用、能帮助我做什么、什么时候该用它。",
+      "每个工具按自身特点组织个性化章节，不强行套统一模板。",
+      "包含常用命令、操作步骤、注意事项、排错方式和与 Claude Code 协作的提示词示例。",
+      "记录具体修改了使用指南的哪个章节或字段，方便更新日志展示 guide content 的 before/after。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  },
+  {
+    "page_path": "/tools/{slug}",
+    "page_name": "工具详情页",
+    "section": "命令与验证",
+    "required_content": [
+      "有可执行命令的工具必须记录安装命令、验证命令和安全运行边界。",
+      "命令示例不得包含真实 API Key、token、cookie、密码、私钥或生产连接串。",
+      "涉及数据库、爬取、浏览器自动化或外部服务时说明授权和只读/安全限制。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  },
+  {
+    "page_path": "/updates",
+    "page_name": "更新日志页",
+    "section": "验证与来源",
+    "required_content": [
+      "展示来源、北京时间、资料生成时间、验证结果和敏感扫描摘要。",
+      "来源只记录公开官方文档、授权资料或本机安全扫描摘要。",
+      "敏感扫描失败时隐藏原始敏感内容，只展示安全摘要和发现数量。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  },
+  {
+    "page_path": "/updates",
+    "page_name": "更新日志页",
+    "section": "变更明细",
+    "required_content": [
+      "展示新增、修改、删除的工具 slug。",
+      "展示具体修改了哪个工具、哪个页面、哪个栏目、哪个字段。",
+      "页面路径和工具 slug 能跳转时必须提供站内链接。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  },
+  {
+    "page_path": "/workflows",
+    "page_name": "推荐工作流页",
+    "section": "工具组合",
+    "required_content": [
+      "每个工作流说明适用场景、步骤、输入输出和验收方式。",
+      "涉及到的工具必须链接到具体工具详情页。",
+      "每天更新时检查是否有新工具能加入已有工作流。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  },
+  {
+    "page_path": "/prompts",
+    "page_name": "提示词模板页",
+    "section": "可复制提示词",
+    "required_content": [
+      "按场景提供可复制提示词，并说明应搭配哪些工具使用。",
+      "提示词要包含输入占位、期望输出、验证方式和安全限制。",
+      "涉及工具名称时必须能引导用户跳转到工具详情页。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  },
+  {
+    "page_path": "/commands",
+    "page_name": "命令速查页",
+    "section": "命令清单",
+    "required_content": [
+      "列出常用命令、用途、运行位置和关联工具。",
+      "命令示例使用占位符，不展示真实密钥或本机敏感路径。",
+      "每天更新时检查新安装 MCP、plugin、CLI 是否需要补充命令。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  },
+  {
+    "page_path": "/guides",
+    "page_name": "综合指南页",
+    "section": "概念与导航",
+    "required_content": [
+      "解释 MCP、CLI、plugin、desktop app、skill 安装后如何使用。",
+      "提供按任务选择工具的导航说明，而不只是工具列表。",
+      "总结性说明需要链接到相关工具详情页和工作流页。"
+    ],
+    "tool_slugs": [],
+    "status": "planned"
+  }
+]

@@ -87,3 +87,52 @@ def test_private_tool_is_hidden_from_public_list():
         headers={"Authorization": f"Bearer {token}"},
     )
     assert admin_response.status_code == 200
+
+
+def test_admin_import_does_not_remove_tools_missing_from_payload():
+    client = TestClient(app)
+    token = _token(client)
+    public_payload = {
+        "source": "claude_local_scan",
+        "generated_at": "2026-06-18T10:00:00+08:00",
+        "tools": [
+            {
+                "name": "Playwright MCP",
+                "slug": "playwright-mcp",
+                "type": "mcp",
+                "status": "configured",
+                "summary": "Browser automation",
+                "visibility": "public",
+                "categories": [],
+                "tags": [],
+                "guides": [],
+            }
+        ],
+    }
+    private_payload = {
+        "source": "claude_local_scan",
+        "generated_at": "2026-06-18T10:30:00+08:00",
+        "tools": [
+            {
+                "name": "Private Runbook",
+                "slug": "private-runbook",
+                "type": "skill",
+                "status": "draft",
+                "summary": "Internal workflow",
+                "visibility": "login_required",
+                "categories": [],
+                "tags": [],
+                "guides": [],
+            }
+        ],
+    }
+
+    assert client.post("/api/admin/imports/tools", json=public_payload, headers={"Authorization": f"Bearer {token}"}).status_code == 200
+    assert client.post("/api/admin/imports/tools", json=private_payload, headers={"Authorization": f"Bearer {token}"}).status_code == 200
+
+    response = client.get("/api/tools")
+
+    assert response.status_code == 200
+    slugs = [tool["slug"] for tool in response.json()]
+    assert "playwright-mcp" in slugs
+    assert "private-runbook" not in slugs
