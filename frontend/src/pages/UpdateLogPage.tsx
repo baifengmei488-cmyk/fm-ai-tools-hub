@@ -49,7 +49,7 @@ export function UpdateLogPage() {
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-200">Content Audit</p>
         <h1 className="mt-3 text-3xl font-bold">更新日志</h1>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-200">
-          记录 ToolVault 每次内容更新的来源、更新时间、影响范围和验证结果，方便回看每天自动更新是否安全、完整、可追踪。
+          记录 FM AI Tools Hub 每次内容更新的来源、更新时间、影响范围和验证结果，方便回看每天自动更新是否安全、完整、可追踪。
         </p>
       </section>
 

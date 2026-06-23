@@ -5,7 +5,7 @@ export function Layout() {
     <div className="min-h-screen">
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" className="text-xl font-bold text-slate-900">ToolVault</Link>
+          <Link to="/" className="text-xl font-bold text-slate-900">FM AI Tools Hub</Link>
           <nav className="flex gap-4 text-sm text-slate-600">
             <Link to="/tools">工具库</Link>
             <Link to="/workflows">工作流</Link>

@@ -43,7 +43,7 @@ const navigationCards = [
 const highlights = [
   ['GitHub MCP', 'Playwright MCP', 'MySQL MCP', '测试结论'],
   ['OpenSpec', 'Spec Kit', 'Claude Code', 'E2E 验证'],
-  ['Firecrawl MCP', '资料整理', 'ToolVault 指南'],
+  ['Firecrawl MCP', '资料整理', 'FM AI Tools Hub 指南'],
   ['Frontend Design plugin', '页面优化', '浏览器验收'],
 ];
 
@@ -52,7 +52,7 @@ export function HomePage() {
     <div className="space-y-8">
       <section className="overflow-hidden rounded-3xl bg-slate-950 p-8 text-white shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-200">开发 / 测试工具知识库</p>
-        <h1 className="mt-3 text-4xl font-bold">ToolVault</h1>
+        <h1 className="mt-3 text-4xl font-bold">FM AI Tools Hub</h1>
         <p className="mt-4 max-w-3xl leading-7 text-slate-200">
           记录 Claude Code MCP、插件、skills、CLI 工具、桌面应用和数据库工具，并把桌面指南里的总结性内容整理成“工具库 + 工作流 + 提示词 + 命令速查”的实用入口。
         </p>

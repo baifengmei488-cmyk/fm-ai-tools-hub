@@ -53,12 +53,12 @@ const promptGroups = [
   },
   {
     title: '资料研究和指南更新',
-    description: '使用 Firecrawl MCP 抓取公开资料，再由 Claude Code 整理成 ToolVault 使用指南。',
+    description: '使用 Firecrawl MCP 抓取公开资料，再由 Claude Code 整理成 FM AI Tools Hub 使用指南。',
     tools: ['Firecrawl MCP', 'Claude Code', 'Time MCP'],
     prompts: [
-      '用 Firecrawl 抓取这个工具的公开文档，整理成 ToolVault 使用指南，并保留来源、更新时间、示例提示词和安全边界。',
-      '抓取这个发布说明页面，提取新增功能、修复内容、潜在风险，以及 ToolVault 哪些指南需要更新。',
-      '对比官方文档和当前 ToolVault 内容，列出需要补充的使用场景、命令、提示词和注意事项。',
+      '用 Firecrawl 抓取这个工具的公开文档，整理成 FM AI Tools Hub 使用指南，并保留来源、更新时间、示例提示词和安全边界。',
+      '抓取这个发布说明页面，提取新增功能、修复内容、潜在风险，以及 FM AI Tools Hub 哪些指南需要更新。',
+      '对比官方文档和当前 FM AI Tools Hub 内容，列出需要补充的使用场景、命令、提示词和注意事项。',
     ],
   },
   {

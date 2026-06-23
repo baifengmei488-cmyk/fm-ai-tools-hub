@@ -87,7 +87,7 @@ async function login(page: import('@playwright/test').Page) {
 
 test('public users can browse imported public tool details', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'ToolVault' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'FM AI Tools Hub' })).toBeVisible();
 
   await page.getByRole('navigation').getByRole('link', { name: '工具库', exact: true }).click();
   await expect(page.getByRole('heading', { name: '工具库' })).toBeVisible();
@@ -109,7 +109,7 @@ test('public users can browse imported public tool details', async ({ page }) =>
 
 test('public users can browse workflow navigation guides', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'ToolVault' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'FM AI Tools Hub' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '推荐组合工作流' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'GitHub MCP' }).first()).toHaveAttribute('href', '/tools/github-mcp');
 

@@ -21,8 +21,8 @@ const workflows = [
   },
   {
     title: '公开资料研究',
-    flow: 'Firecrawl 抓公开网页 → Claude Code 整理成指南 → PicGo 处理截图素材 → 写入 ToolVault。',
-    prompt: '用 Firecrawl 抓取这个工具的公开文档，整理成 ToolVault 使用指南，并保留来源、更新时间、示例提示词和安全边界。',
+    flow: 'Firecrawl 抓公开网页 → Claude Code 整理成指南 → PicGo 处理截图素材 → 写入 FM AI Tools Hub。',
+    prompt: '用 Firecrawl 抓取这个工具的公开文档，整理成 FM AI Tools Hub 使用指南，并保留来源、更新时间、示例提示词和安全边界。',
     tools: ['Firecrawl MCP', 'Claude Code', 'PicGo'],
   },
   {
@@ -59,7 +59,7 @@ const toolCombos = [
   {
     title: 'Firecrawl + Claude Code',
     tools: ['Firecrawl MCP', 'Claude Code'],
-    prompts: ['用 Firecrawl 抓取公开文档，Claude Code 整理成 ToolVault 指南，重点写安装后怎么用和常见提示词。', '抓取这个发布说明页面，提取新增、修复、风险和需要更新的指南内容。'],
+    prompts: ['用 Firecrawl 抓取公开文档，Claude Code 整理成 FM AI Tools Hub 指南，重点写安装后怎么用和常见提示词。', '抓取这个发布说明页面，提取新增、修复、风险和需要更新的指南内容。'],
   },
   {
     title: 'Frontend Design + Playwright',

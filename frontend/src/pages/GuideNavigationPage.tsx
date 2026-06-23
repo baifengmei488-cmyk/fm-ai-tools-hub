@@ -4,7 +4,7 @@ const mcpExamples = [
   '打开网页并测试登录流程，检查控制台错误和关键网络请求。',
   '查看这个 GitHub PR 的改动范围、CI 状态和 review 评论。',
   '查询数据库里最近 10 条订单，只读验证页面状态是否和数据一致。',
-  '抓取这个公开文档页面，整理成 ToolVault 使用指南并保留来源。',
+  '抓取这个公开文档页面，整理成 FM AI Tools Hub 使用指南并保留来源。',
   '把这个 UTC 时间转换成本地时间，并写入测试结论。',
 ];
 
@@ -16,7 +16,7 @@ const scopeRows = [
 
 const safetyNotes = [
   '不要把 token、密码、cookie、API Key 或生产连接串发到聊天里。',
-  '不要把密钥写入项目文件或 ToolVault 导入 JSON。',
+  '不要把密钥写入项目文件或 FM AI Tools Hub 导入 JSON。',
   '数据库 MCP 使用只读账号，默认不要连接生产数据库。',
   'Firecrawl 只抓公开或已授权网页，不抓付费墙、内部系统或敏感内容。',
   'PicGo 不上传包含密钥、客户数据、内部系统截图或个人隐私的图片。',
@@ -44,7 +44,7 @@ const workflowTips = [
   { scenario: '需求还不清楚', tools: ['OpenSpec', 'Spec Kit', 'Claude Code'], suggestion: '先明确规格，再让 Claude Code 实现。' },
   { scenario: '页面效果不好', tools: ['Frontend Design plugin', 'Playwright MCP'], suggestion: '先设计页面，再打开真实页面验收。' },
   { scenario: 'PR 不知道测什么', tools: ['GitHub MCP', 'Playwright MCP', 'MySQL MCP', 'Time MCP'], suggestion: '先看改动，再组合页面、数据和时间信息输出结论。' },
-  { scenario: '资料需要更新', tools: ['Firecrawl MCP', 'Claude Code'], suggestion: '抓公开资料后整理进 ToolVault。' },
+  { scenario: '资料需要更新', tools: ['Firecrawl MCP', 'Claude Code'], suggestion: '抓公开资料后整理进 FM AI Tools Hub。' },
   { scenario: '重复流程太多', tools: ['Skill Creator plugin', 'Superpowers Skills'], suggestion: '写成 skill，并参考流程安全边界和验证方式。' },
   { scenario: '需要截图报告', tools: ['Playwright MCP', 'PicGo'], suggestion: '先截图验收，再处理可公开的图片素材。' },
 ];

@@ -8,7 +8,7 @@ from app.api.routes.public_tools import router as public_tools_router
 from app.api.routes.update_logs import router as update_logs_router
 from app.core.config import settings
 
-app = FastAPI(title="ToolVault API")
+app = FastAPI(title="FM AI Tools Hub API")
 
 app.add_middleware(
     CORSMiddleware,
