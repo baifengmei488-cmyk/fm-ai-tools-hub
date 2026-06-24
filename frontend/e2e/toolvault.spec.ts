@@ -115,23 +115,42 @@ test('public users can browse imported public tool details', async ({ page }) =>
   await expect(page.getByText('安装后可以在 Claude Code 中请求公开库文档')).toBeVisible();
 });
 
-test('public users can browse workflow navigation guides', async ({ page }) => {
+test('public users can browse workflow, prompt, and command tabs', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'FM AI Tools Hub' })).toBeVisible();
-  await expect(page.getByText('Context7 MCP 新增后')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Context7 MCP' }).first()).toHaveAttribute('href', '/tools/context7-mcp');
+  await expect(page.getByText('工具库 + 工作流 + 提示词 + 命令速查')).toHaveCount(0);
+  await expect(page.getByText('工具库 + 综合工作流')).toBeVisible();
+  await expect(page.getByRole('navigation').getByRole('link', { name: '提示词' })).toHaveCount(0);
+  await expect(page.getByRole('navigation').getByRole('link', { name: '命令速查' })).toHaveCount(0);
 
   await page.getByRole('link', { name: '查看工作流' }).click();
   await expect(page).toHaveURL(/\/workflows$/);
   await expect(page.getByRole('heading', { name: '实用工作流' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Context7 文档研究到指南更新' })).toBeVisible();
-  await expect(page.getByText('Context7 MCP 查询公开库文档 → Claude Code 整理使用指南 → Playwright MCP 打开页面验收展示。')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Context7 + Playwright' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Context7 MCP' }).first()).toHaveAttribute('href', '/tools/context7-mcp');
+  await expect(page.getByRole('tab', { name: '工作流' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('heading', { name: '推荐组合工作流' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '组合使用示例' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '测试人员常用提示词模板' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: '快速命令汇总' })).toHaveCount(0);
+
+  await page.getByRole('tab', { name: '提示词' }).click();
+  await expect(page).toHaveURL(/\/workflows\?tab=prompts$/);
+  await expect(page.getByRole('tab', { name: '提示词' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('heading', { name: '测试人员常用提示词模板' })).toBeVisible();
-  await expect(page.getByText('用 Context7 MCP 查询这个工具的公开文档')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '推荐组合工作流' })).toHaveCount(0);
+
+  await page.getByRole('tab', { name: '命令' }).click();
+  await expect(page).toHaveURL(/\/workflows\?tab=commands$/);
+  await expect(page.getByRole('tab', { name: '命令' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('heading', { name: '快速命令汇总' })).toBeVisible();
-  await expect(page.getByText('claude mcp get context7')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '安全边界' })).toBeVisible();
+
+  await page.goto('/prompts');
+  await expect(page).toHaveURL(/\/workflows\?tab=prompts$/);
+  await expect(page.getByRole('tab', { name: '提示词' })).toHaveAttribute('aria-selected', 'true');
+
+  await page.goto('/commands');
+  await expect(page).toHaveURL(/\/workflows\?tab=commands$/);
+  await expect(page.getByRole('tab', { name: '命令' })).toHaveAttribute('aria-selected', 'true');
 });
 
 test('public users can browse update logs', async ({ page }) => {
@@ -149,71 +168,70 @@ test('public users can browse update logs', async ({ page }) => {
   await expect(page.getByText('/tools/{slug}')).toHaveCount(0);
 
   await latestLog.getByRole('button', { name: /展开更新日志/ }).click();
-  await expect(page.getByText('2026-06-18T10:00:00+08:00')).toBeVisible();
-  await expect(page.getByRole('button', { name: /展开执行前页面内容清单/ })).toBeVisible();
-  await page.getByRole('button', { name: /展开执行前页面内容清单/ }).click();
-  await expect(page.getByText('/tools/{slug}')).toBeVisible();
-  await expect(page.getByText('说明安装后怎么使用')).toBeVisible();
-  await expect(page.getByRole('button', { name: /展开执行结果报告/ })).toBeVisible();
+  await expect(page.getByText(/更新时间：/)).toBeVisible();
+  await expect(page.getByText(/资料生成：/)).toBeVisible();
+  await expect(page.getByText(/验证：Validation passed/)).toBeVisible();
+  await expect(page.getByText(/影响工具：/)).toBeVisible();
+  await expect(page.getByRole('button', { name: /展开执行前页面内容清单/ })).toHaveCount(0);
+  await expect(page.getByText('/tools/{slug}')).toHaveCount(0);
+  await expect(page.getByText('说明安装后怎么使用')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /展开执行详情/ })).toBeVisible();
   await expect(page.getByText(/质量结论：/)).toHaveCount(0);
-  await page.getByRole('button', { name: /展开执行结果报告/ }).click();
-  await expect(page.getByText(/结果：status=imported import_id=/)).toBeVisible();
+  await page.getByRole('button', { name: /展开执行详情/ }).click();
+  await expect(page.getByRole('tab', { name: '执行结果报告' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByText('结果：')).toBeVisible();
+  await expect(page.getByText('status=imported')).toBeVisible();
+  await expect(page.getByText(/import_id=\d+/)).toBeVisible();
   await expect(page.getByText(/质量结论：/)).toBeVisible();
-  await expect(page.getByRole('button', { name: /展开具体更新内容/ })).toBeVisible();
   await expect(page.getByText('工具', { exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: /展开具体更新内容/ }).click();
+  await page.getByRole('tab', { name: '具体更新内容' }).click();
+  await expect(page.getByRole('tab', { name: '具体更新内容' })).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByText('工具', { exact: true })).toBeVisible();
   await expect(page.getByText('页面', { exact: true })).toBeVisible();
   await expect(page.getByText('字段', { exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: '/tools/playwright-mcp' }).first()).toHaveAttribute('href', '/tools/playwright-mcp');
-  await expect(page.getByText('tool', { exact: true }).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Playwright MCP', exact: true }).first()).toHaveAttribute('href', '/tools/playwright-mcp');
-  await expect(page.getByRole('link', { name: 'uv', exact: true }).first()).toHaveAttribute('href', '/tools/uv');
-
-  await page.getByRole('link', { name: 'Playwright MCP', exact: true }).first().click();
-  await expect(page).toHaveURL(/\/tools\/playwright-mcp$/);
+  const promptWorkflowLinks = page.getByRole('link', { name: '工作流 · 提示词' });
+  const commandWorkflowLinks = page.getByRole('link', { name: '工作流 · 命令' });
+  await expect(promptWorkflowLinks.first()).toHaveAttribute('href', '/workflows?tab=prompts');
+  await expect(promptWorkflowLinks.nth(1)).toHaveAttribute('href', '/workflows?tab=prompts');
+  await expect(commandWorkflowLinks.first()).toHaveAttribute('href', '/workflows?tab=commands');
+  await expect(commandWorkflowLinks.nth(1)).toHaveAttribute('href', '/workflows?tab=commands');
+  await expect(page.getByRole('link', { name: '/prompts' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: '/commands' })).toHaveCount(0);
+  const firstToolLink = page.locator('a[href^="/tools/"]').first();
+  await expect(firstToolLink).toBeVisible();
+  await firstToolLink.click();
+  await expect(page).toHaveURL(/\/tools\//);
 });
 
-test('public users can browse prompt, command, and guide pages', async ({ page }) => {
+test('public users can browse guide page and legacy workflow redirects', async ({ page }) => {
   await page.goto('/prompts');
-  await expect(page.getByRole('heading', { name: '提示词模板库' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: '资料研究和指南更新' })).toBeVisible();
-  await expect(page.getByText('使用 Context7 MCP 查询公开库文档')).toBeVisible();
-  await expect(page.getByText('用 Context7 MCP 查询这个工具的公开文档')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Python 工具和后端脚本' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Context7 MCP' })).toHaveAttribute('href', '/tools/context7-mcp');
+  await expect(page).toHaveURL(/\/workflows\?tab=prompts$/);
+  await expect(page.getByRole('tab', { name: '提示词' })).toHaveAttribute('aria-selected', 'true');
 
-  await page.getByRole('navigation').getByRole('link', { name: '命令速查' }).click();
-  await expect(page).toHaveURL(/\/commands$/);
-  await expect(page.getByRole('heading', { name: '快速命令汇总' })).toBeVisible();
-  await expect(page.getByText('claude mcp get context7', { exact: true })).toBeVisible();
-  await expect(page.getByText('claude mcp get playwright', { exact: true })).toBeVisible();
-  await expect(page.getByText('uv --version', { exact: true })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Context7 MCP' }).first()).toHaveAttribute('href', '/tools/context7-mcp');
+  await page.goto('/commands');
+  await expect(page).toHaveURL(/\/workflows\?tab=commands$/);
+  await expect(page.getByRole('tab', { name: '命令' })).toHaveAttribute('aria-selected', 'true');
 
   await page.getByRole('navigation').getByRole('link', { name: '使用指南' }).click();
   await expect(page).toHaveURL(/\/guides$/);
   await expect(page.getByRole('heading', { name: '工具使用导航' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'MCP 装了以后怎么使用？' })).toBeVisible();
-  await expect(page.getByText('Claude 会根据任务选择合适的 MCP 工具。')).toBeVisible();
   await expect(page.getByRole('heading', { name: '安全注意事项' })).toBeVisible();
-  await expect(page.getByText('公开库文档、API 示例和指南资料补充')).toBeVisible();
-  await expect(page.getByText('新增 MCP 工具后需要补全全站内容')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'uv' })).toHaveAttribute('href', '/tools/uv');
-  await expect(page.getByRole('link', { name: 'Context7 MCP' }).first()).toHaveAttribute('href', '/tools/context7-mcp');
+  await expect(page.locator('a[href^="/tools/"]').first()).toBeVisible();
 });
 
 test('public users can filter tools by type radio buttons', async ({ page }) => {
   await page.goto('/tools');
   await expect(page.getByRole('heading', { name: 'Playwright MCP' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'uv' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Playwright MCP/ }).getByText('playwright', { exact: true })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /uv/ }).getByText('tooling', { exact: true })).toHaveCount(0);
 
   const typeFilter = page.getByLabel('工具标识筛选');
 
-  await typeFilter.getByText('mcp', { exact: true }).click();
-  await expect(typeFilter.locator('input[value="mcp"]')).toBeChecked();
+  await typeFilter.getByText('mcp_server', { exact: true }).click();
+  await expect(typeFilter.locator('input[value="mcp_server"]')).toBeChecked();
   await expect(page.getByRole('heading', { name: 'Playwright MCP' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Context7 MCP' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Context7 MCP' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'uv' })).toHaveCount(0);
 
   await typeFilter.getByText('cli', { exact: true }).click();

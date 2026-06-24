@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { apiGet, type UpdateLogChangeDetail, type UpdateLogContentPlanItem, type UpdateLogEntry } from '../api/client';
+import { apiGet, type UpdateLogChange, type UpdateLogChangeDetail, type UpdateLogEntry } from '../api/client';
 
 function statusClassName(status: string) {
   if (status === 'failed') {
@@ -20,6 +20,16 @@ function formatBeijingTime(value: string) {
   return new Date(value).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false });
 }
 
+function sourceSummary(log: UpdateLogEntry) {
+  if (log.sources.length === 0) {
+    return log.source;
+  }
+
+  const titles = log.sources.slice(0, 2).map((source) => source.title);
+  const overflow = log.sources.length - titles.length;
+  return overflow > 0 ? `${titles.join('、')} +${overflow}` : titles.join('、');
+}
+
 function ChangeBucket({ label, slugs = [], className }: { label: string; slugs?: string[]; className: string }) {
   if (slugs.length === 0) return null;
 
@@ -37,8 +47,17 @@ function ChangeBucket({ label, slugs = [], className }: { label: string; slugs?:
   );
 }
 
-function linkablePagePath(path: string) {
-  return path.startsWith('/') && !path.includes('{') ? path : undefined;
+function pagePathLink(path: string) {
+  if (path === '/prompts') {
+    return { href: '/workflows?tab=prompts', label: '工作流 · 提示词' };
+  }
+  if (path === '/commands') {
+    return { href: '/workflows?tab=commands', label: '工作流 · 命令' };
+  }
+  if (path.startsWith('/') && !path.includes('{')) {
+    return { href: path, label: path };
+  }
+  return undefined;
 }
 
 function CollapsibleSection({ title, summary, tone = 'slate', children }: { title: string; summary: string; tone?: 'slate' | 'blue'; children: React.ReactNode }) {
@@ -49,7 +68,7 @@ function CollapsibleSection({ title, summary, tone = 'slate', children }: { titl
   return (
     <section className={containerClassName}>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
+        <div className="min-w-0 flex-1">
           <h3 className="font-bold text-slate-950">{title}</h3>
           <p className="mt-1 text-sm leading-6 text-slate-600">{summary}</p>
         </div>
@@ -62,49 +81,50 @@ function CollapsibleSection({ title, summary, tone = 'slate', children }: { titl
   );
 }
 
-function ContentPlanChecklist({ items = [] }: { items?: UpdateLogContentPlanItem[] }) {
-  if (items.length === 0) return null;
+function parseExecutionReportLine(line: string) {
+  const match = line.match(/^([^:：]{1,24})[:：]\s*(.*)$/);
+  if (!match) {
+    return { label: '记录', value: line };
+  }
+  return { label: match[1], value: match[2] };
+}
 
-  const grouped = items.reduce<Record<string, UpdateLogContentPlanItem[]>>((groups, item) => {
-    groups[item.page_path] = [...(groups[item.page_path] ?? []), item];
-    return groups;
-  }, {});
+function ExecutionReportValue({ value }: { value: string }) {
+  const parts = value.split(/\s+/).filter(Boolean);
+  const shouldSplit = parts.length > 1 && parts.every((part) => part.includes('='));
+
+  if (!shouldSplit) {
+    return <span className="min-w-0 break-words text-slate-700">{value}</span>;
+  }
 
   return (
-      <div className="grid gap-3 lg:grid-cols-2">
-        {Object.entries(grouped).map(([pagePath, pageItems]) => (
-          <div key={pagePath} className="rounded-xl bg-white p-4 ring-1 ring-slate-100">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="font-semibold text-slate-950">{pageItems[0].page_name}</p>
-              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">{pagePath}</span>
-            </div>
-            <div className="mt-3 space-y-3">
-              {pageItems.map((item) => (
-                <div key={`${item.page_path}-${item.section}`} className="text-sm leading-6 text-slate-700">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-slate-950">{item.section}</span>
-                    <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-blue-100">{item.status}</span>
-                  </div>
-                  <ul className="mt-2 list-disc space-y-1 pl-5">
-                    {item.required_content.map((content) => (
-                      <li key={content}>{content}</li>
-                    ))}
-                  </ul>
-                  {item.tool_slugs.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {item.tool_slugs.map((slug) => (
-                        <Link key={`${item.page_path}-${item.section}-${slug}`} className="rounded-full bg-slate-50 px-2 py-0.5 text-xs font-semibold text-blue-700 hover:text-blue-900" to={`/tools/${slug}`}>
-                          {slug}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+    <span className="flex min-w-0 flex-wrap gap-1.5">
+      {parts.map((part) => (
+        <span key={part} className="rounded-full bg-slate-50 px-2 py-0.5 font-mono text-xs text-slate-700 ring-1 ring-slate-100">
+          {part}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function ExecutionReportRows({ lines = [] }: { lines?: string[] }) {
+  if (lines.length === 0) {
+    return <p className="rounded-xl bg-white p-3 text-sm text-slate-600 ring-1 ring-slate-100">本次更新没有执行结果报告。</p>;
+  }
+
+  return (
+    <div className="overflow-hidden rounded-xl bg-white ring-1 ring-slate-100">
+      {lines.map((line, index) => {
+        const row = parseExecutionReportLine(line);
+        return (
+          <div key={`${line}-${index}`} className="grid gap-1 border-b border-slate-100 px-3 py-2 text-sm leading-6 last:border-b-0 md:grid-cols-[8rem_1fr]">
+            <span className="font-semibold text-slate-950">{row.label}：</span>
+            <ExecutionReportValue value={row.value} />
           </div>
-        ))}
-      </div>
+        );
+      })}
+    </div>
   );
 }
 
@@ -113,7 +133,7 @@ function ChangeDetailList({ details = [] }: { details?: UpdateLogChangeDetail[] 
 
   return (
     <div className="mt-4 overflow-hidden rounded-xl bg-white ring-1 ring-blue-100">
-      <div className="grid gap-0 bg-blue-100/60 px-3 py-2 text-xs font-bold uppercase tracking-wide text-blue-900 md:grid-cols-[1.2fr_1.2fr_0.8fr_1fr_0.8fr_1fr]">
+      <div className="grid gap-2 bg-blue-100/60 px-3 py-2 text-xs font-bold uppercase tracking-wide text-blue-900 md:grid-cols-[1.1fr_1.1fr_0.9fr_1.2fr_0.7fr_1fr]">
         <span>工具</span>
         <span>页面</span>
         <span>栏目</span>
@@ -123,10 +143,10 @@ function ChangeDetailList({ details = [] }: { details?: UpdateLogChangeDetail[] 
       </div>
       <div className="divide-y divide-blue-100">
         {details.map((detail) => {
-          const pageTo = linkablePagePath(detail.page_path);
+          const pageLink = pagePathLink(detail.page_path);
           return (
-            <div key={`${detail.tool_slug}-${detail.page_path}-${detail.section}-${detail.field}-${detail.change_type}`} className="grid gap-2 px-3 py-3 text-sm leading-6 text-blue-950 md:grid-cols-[1.2fr_1.2fr_0.8fr_1fr_0.8fr_1fr]">
-              <div>
+            <div key={`${detail.tool_slug}-${detail.page_path}-${detail.section}-${detail.field}-${detail.change_type}`} className="grid gap-2 px-3 py-3 text-sm leading-6 text-blue-950 md:grid-cols-[1.1fr_1.1fr_0.9fr_1.2fr_0.7fr_1fr]">
+              <div className="min-w-0 break-words">
                 {detail.tool_slug ? (
                   <Link className="font-semibold text-blue-700 hover:text-blue-900" to={`/tools/${detail.tool_slug}`}>
                     {detail.tool_name || detail.tool_slug}
@@ -135,23 +155,23 @@ function ChangeDetailList({ details = [] }: { details?: UpdateLogChangeDetail[] 
                   <span>{detail.tool_name || '-'}</span>
                 )}
               </div>
-              <div>
-                {pageTo ? (
-                  <Link className="font-semibold text-blue-700 hover:text-blue-900" to={pageTo}>
-                    {detail.page_path}
+              <div className="min-w-0 break-words">
+                {pageLink ? (
+                  <Link className="font-semibold text-blue-700 hover:text-blue-900" to={pageLink.href}>
+                    {pageLink.label}
                   </Link>
                 ) : (
                   <span>{detail.page_path}</span>
                 )}
               </div>
-              <span>{detail.section}</span>
-              <span className="break-all font-mono text-xs">{detail.field}</span>
-              <span>{detail.change_type}</span>
-              <span>{detail.source_titles.length > 0 ? detail.source_titles.join('、') : '-'}</span>
+              <span className="min-w-0 break-words">{detail.section}</span>
+              <span className="min-w-0 break-words font-mono text-xs">{detail.field}</span>
+              <span className="min-w-0 break-words">{detail.change_type}</span>
+              <span className="min-w-0 break-words">{detail.source_titles.length > 0 ? detail.source_titles.join('、') : '-'}</span>
               {(detail.before || detail.after) && (
-                <div className="rounded-lg bg-blue-50 p-2 text-xs leading-5 text-blue-900 md:col-span-6">
-                  {detail.before && <p>修改前：{detail.before}</p>}
-                  {detail.after && <p>修改后：{detail.after}</p>}
+                <div className="min-w-0 rounded-lg bg-blue-50 p-2 text-xs leading-5 text-blue-900 md:col-span-6">
+                  {detail.before && <p className="break-words">修改前：{detail.before}</p>}
+                  {detail.after && <p className="break-words">修改后：{detail.after}</p>}
                 </div>
               )}
             </div>
@@ -159,6 +179,94 @@ function ChangeDetailList({ details = [] }: { details?: UpdateLogChangeDetail[] 
         })}
       </div>
     </div>
+  );
+}
+
+function ChangeList({ changes }: { changes: UpdateLogChange[] }) {
+  if (changes.length === 0) {
+    return <p className="rounded-xl bg-white p-3 text-sm text-blue-900 ring-1 ring-blue-100">本次更新没有字段级变更记录。</p>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {changes.map((change) => (
+        <div key={`${change.title}-${change.change_type}`} className="rounded-xl bg-white p-4 text-sm leading-6 text-blue-950 ring-1 ring-blue-100">
+          <p className="font-semibold">{change.title}</p>
+          <p className="break-words">{change.description}</p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <ChangeBucket label="新增" slugs={change.added_tool_slugs} className="bg-emerald-50 text-emerald-700 ring-emerald-100" />
+            <ChangeBucket label="修改" slugs={change.updated_tool_slugs} className="bg-blue-50 text-blue-700 ring-blue-100" />
+            <ChangeBucket label="删除" slugs={change.deleted_tool_slugs} className="bg-rose-50 text-rose-700 ring-rose-100" />
+          </div>
+          {change.page_paths.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {change.page_paths.map((path) => {
+                const pageLink = pagePathLink(path);
+                return pageLink ? (
+                  <Link key={path} className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 hover:text-blue-900" to={pageLink.href}>
+                    {pageLink.label}
+                  </Link>
+                ) : (
+                  <span key={path} className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                    {path}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+          <ChangeDetailList details={change.change_details} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ExecutionDetails({ log }: { log: UpdateLogEntry }) {
+  const [activeTab, setActiveTab] = useState<'report' | 'changes'>('report');
+  const tabClassName = (tab: 'report' | 'changes') =>
+    `rounded-lg px-3 py-2 text-sm font-semibold transition ${activeTab === tab ? 'bg-blue-600 text-white' : 'bg-white text-slate-600 ring-1 ring-slate-200 hover:text-slate-950'}`;
+
+  return (
+    <div>
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label="执行详情分类">
+        <button id="execution-report-tab" type="button" role="tab" aria-selected={activeTab === 'report'} aria-controls="execution-report-panel" className={tabClassName('report')} onClick={() => setActiveTab('report')}>
+          执行结果报告
+        </button>
+        <button id="change-details-tab" type="button" role="tab" aria-selected={activeTab === 'changes'} aria-controls="change-details-panel" className={tabClassName('changes')} onClick={() => setActiveTab('changes')}>
+          具体更新内容
+        </button>
+      </div>
+      <div className="mt-3">
+        {activeTab === 'report' && (
+          <div id="execution-report-panel" role="tabpanel" aria-labelledby="execution-report-tab">
+            <ExecutionReportRows lines={log.execution_report} />
+          </div>
+        )}
+        {activeTab === 'changes' && (
+          <div id="change-details-panel" role="tabpanel" aria-labelledby="change-details-tab">
+            <ChangeList changes={log.changes} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AffectedToolsLine({ log }: { log: UpdateLogEntry }) {
+  const visibleTools = log.affected_tools.slice(0, 3);
+  const overflow = log.affected_tools.length - visibleTools.length;
+
+  return (
+    <p className="flex flex-wrap items-center gap-1 text-sm leading-6 text-slate-600">
+      <span>影响工具：{log.affected_tools.length} 个</span>
+      {visibleTools.map((tool) => (
+        <Link key={tool.slug} className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-blue-100 hover:text-blue-900" to={`/tools/${tool.slug}`}>
+          {tool.name}
+        </Link>
+      ))}
+      {overflow > 0 && <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">+{overflow}</span>}
+      {log.affected_tools.length === 0 && <span>本次更新没有公开工具链接。</span>}
+    </p>
   );
 }
 
@@ -187,94 +295,16 @@ function UpdateLogArticle({ log }: { log: UpdateLogEntry }) {
         <div className="mt-5">
           <div className="rounded-xl bg-slate-50 p-4">
             <h3 className="font-bold text-slate-950">更新概览</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">更新时间：{logTime}</p>
-            {log.generated_at && <p className="text-sm leading-6 text-slate-600">资料生成时间：{log.generated_at}</p>}
+            <div className="mt-2 space-y-1">
+              <p className="break-words text-sm leading-6 text-slate-600">更新时间：{logTime}；资料生成：{log.generated_at || '-'}；来源：{sourceSummary(log)}</p>
+              <p className="break-words text-sm leading-6 text-slate-600">验证：{log.validation.message}；敏感发现：{log.validation.sensitive_findings_count}；指南数量：{log.guide_count}</p>
+              <AffectedToolsLine log={log} />
+            </div>
           </div>
 
-          <div className="mt-5 grid gap-4 lg:grid-cols-2">
-            <section className="rounded-xl bg-slate-50 p-4">
-              <h3 className="font-bold text-slate-950">来源</h3>
-              <div className="mt-3 space-y-3">
-                {log.sources.length === 0 && <p className="text-sm text-slate-600">本次更新未记录外部来源。</p>}
-                {log.sources.map((source) => (
-                  <div key={`${source.title}-${source.checked_at}`} className="text-sm leading-6 text-slate-700">
-                    <p className="font-semibold text-slate-950">{source.title}</p>
-                    <p>类型：{source.source_type}</p>
-                    <p>检查时间：{source.checked_at}</p>
-                    {source.url && <a className="text-blue-700 hover:text-blue-900" href={source.url} rel="noreferrer" target="_blank">查看来源</a>}
-                    {source.note && <p>{source.note}</p>}
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="rounded-xl bg-slate-50 p-4">
-              <h3 className="font-bold text-slate-950">验证和影响范围</h3>
-              <p className="mt-3 text-sm leading-6 text-slate-700">敏感信息发现数：{log.validation.sensitive_findings_count}</p>
-              <p className="text-sm leading-6 text-slate-700">指南数量：{log.guide_count}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {log.affected_tools.length === 0 && <span className="text-sm text-slate-600">本次更新没有公开工具链接。</span>}
-                {log.affected_tools.map((tool) => (
-                  <Link key={tool.slug} className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-100 hover:text-blue-900" to={`/tools/${tool.slug}`}>
-                    {tool.name}
-                  </Link>
-                ))}
-              </div>
-            </section>
-          </div>
-
-          {log.content_plan.length > 0 && (
-            <CollapsibleSection title="执行前页面内容清单" summary={`${log.content_plan.length} 项页面内容检查，展开查看每个页面和栏目要求。`}>
-              <ContentPlanChecklist items={log.content_plan} />
-            </CollapsibleSection>
-          )}
-
-          {log.execution_report.length > 0 && (
-            <CollapsibleSection title="执行结果报告" summary={`${log.execution_report.length} 条执行结果、验证摘要和质量结论。`}>
-              <ul className="space-y-2 text-sm leading-6 text-slate-700">
-                {log.execution_report.map((line) => (
-                  <li key={line} className="rounded-lg bg-white px-3 py-2 ring-1 ring-slate-100">
-                    {line}
-                  </li>
-                ))}
-              </ul>
-            </CollapsibleSection>
-          )}
-
-          {log.changes.length > 0 && (
-            <CollapsibleSection title="具体更新内容" summary={`${log.changes.length} 条更新记录，展开查看新增/修改/删除、页面路径和字段级变更。`} tone="blue">
-              <div className="space-y-3">
-                {log.changes.map((change) => (
-                  <div key={`${change.title}-${change.change_type}`} className="text-sm leading-6 text-blue-950">
-                    <p className="font-semibold">{change.title}</p>
-                    <p>{change.description}</p>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                      <ChangeBucket label="新增" slugs={change.added_tool_slugs} className="bg-emerald-50 text-emerald-700 ring-emerald-100" />
-                      <ChangeBucket label="修改" slugs={change.updated_tool_slugs} className="bg-blue-50 text-blue-700 ring-blue-100" />
-                      <ChangeBucket label="删除" slugs={change.deleted_tool_slugs} className="bg-rose-50 text-rose-700 ring-rose-100" />
-                    </div>
-                    {change.page_paths.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        {change.page_paths.map((path) => {
-                          const pageTo = linkablePagePath(path);
-                          return pageTo ? (
-                            <Link key={path} className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:text-blue-900" to={pageTo}>
-                              {path}
-                            </Link>
-                          ) : (
-                            <span key={path} className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-blue-700">
-                              {path}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    )}
-                    <ChangeDetailList details={change.change_details} />
-                  </div>
-                ))}
-              </div>
-            </CollapsibleSection>
-          )}
+          <CollapsibleSection title="执行详情" summary={`${log.execution_report.length} 条报告，${log.changes.length} 条更新记录。`} tone="blue">
+            <ExecutionDetails log={log} />
+          </CollapsibleSection>
         </div>
       )}
     </article>
@@ -313,7 +343,7 @@ export function UpdateLogPage() {
       <section className="rounded-3xl bg-slate-950 p-8 text-white shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-200">Content Audit</p>
         <h1 className="mt-3 text-3xl font-bold">更新日志</h1>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-200">
+        <p className="mt-4 max-w-5xl text-sm leading-7 text-slate-200">
           记录 FM AI Tools Hub 每次内容更新的来源、更新时间、影响范围和验证结果，方便回看每天自动更新是否安全、完整、可追踪。
         </p>
       </section>

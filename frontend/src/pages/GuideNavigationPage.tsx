@@ -26,7 +26,7 @@ export function GuideNavigationPage() {
       <section className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-100">
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Guide Navigation</p>
         <h1 className="mt-3 text-3xl font-bold text-slate-950">工具使用导航</h1>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">
+        <p className="mt-4 max-w-5xl text-sm leading-7 text-slate-600">
           这里放“怎么选工具、怎么开始、什么不能做”的导航性说明；具体工具的完整指南仍在工具详情页。
         </p>
       </section>

@@ -9,7 +9,6 @@ from app.cli.import_tools import run_import_payload
 from app.core.database import SessionLocal
 from app.models import ImportBatch
 from app.schemas.import_payload import ToolImportPayload
-from app.services.import_tools import _default_page_content
 
 
 DEFAULT_PAYLOAD = Path(__file__).resolve().parents[4] / "imports" / "toolvault-import-preview.json"
@@ -266,8 +265,6 @@ def _load_payload(payload_path: Path, include_installed: bool, content_plan: lis
         payload_data["tools"] = [*payload_data.get("tools", []), *additions]
     if content_plan is not None:
         payload_data = _merge_content_plan(payload_data, content_plan)
-    if not payload_data.get("page_content"):
-        payload_data["page_content"] = _default_page_content(payload_data)
     return ToolImportPayload.model_validate(payload_data)
 
 

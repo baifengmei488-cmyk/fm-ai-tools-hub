@@ -56,6 +56,53 @@ def _write_payload(tmp_path, payload):
     return payload_path
 
 
+def _page_content():
+    tool_ref = {"name": "Playwright MCP", "slug": "playwright-mcp", "type": "mcp"}
+    return {
+        "home_highlights": [
+            {
+                "title": "保留的首页推荐",
+                "description": "上一轮保留下来的首页推荐。",
+                "tools": [tool_ref],
+            }
+        ],
+        "workflows": [
+            {
+                "title": "保留的工作流",
+                "flow": "上一轮工作流。",
+                "prompt": "继续沿用上一轮提示。",
+                "tools": [tool_ref],
+            }
+        ],
+        "tool_combinations": [],
+        "prompt_groups": [
+            {
+                "title": "保留的提示词组",
+                "description": "上一轮提示词。",
+                "tools": [tool_ref],
+                "prompts": ["保留这条提示词。"],
+            }
+        ],
+        "command_groups": [
+            {
+                "title": "保留的命令组",
+                "tools": [tool_ref],
+                "commands": ["claude mcp get playwright"],
+                "note": "上一轮命令。",
+            }
+        ],
+        "guide_choices": [{"need": "保留的导航选择", "tools": [tool_ref]}],
+        "guide_workflow_tips": [
+            {
+                "scenario": "保留的导航场景",
+                "tools": [tool_ref],
+                "suggestion": "上一轮建议。",
+            }
+        ],
+        "guide_safety_notes": ["保留上一轮安全说明。"],
+    }
+
+
 def test_daily_update_cli_imports_payload_and_verifies_update_log(tmp_path, monkeypatch, capsys, db_session):
     payload_path = _write_payload(tmp_path, _payload())
 
@@ -77,6 +124,28 @@ def test_daily_update_cli_imports_payload_and_verifies_update_log(tmp_path, monk
     assert "Verify daily update entrypoint" in captured.out
     assert batch.raw_payload["sources"][0]["title"] == "Manual daily run"
     assert batch.raw_payload["changes"][0]["title"] == "Verify daily update entrypoint"
+
+
+def test_daily_update_cli_preserves_previous_page_content_when_payload_omits_it(tmp_path, monkeypatch, db_session):
+    first_payload = _payload()
+    first_payload["page_content"] = _page_content()
+    second_payload = _payload(summary="Updated summary")
+    first_path = _write_payload(tmp_path / "first", first_payload)
+    second_path = _write_payload(tmp_path / "second", second_payload)
+
+    from app.cli import daily_update
+
+    monkeypatch.setattr(daily_update, "SessionLocal", lambda: nullcontext(db_session))
+
+    assert daily_update.main(["--payload", str(first_path)]) == 0
+    assert daily_update.main(["--payload", str(second_path)]) == 0
+
+    batch = db_session.query(ImportBatch).order_by(ImportBatch.id.desc()).first()
+    assert batch.raw_payload["page_content"]["home_highlights"][0]["title"] == "保留的首页推荐"
+    assert batch.raw_payload["page_content"]["workflows"][0]["title"] == "保留的工作流"
+    assert batch.raw_payload["page_content"]["prompt_groups"][0]["title"] == "保留的提示词组"
+    assert batch.raw_payload["page_content"]["command_groups"][0]["title"] == "保留的命令组"
+    assert "保留上一轮安全说明。" in batch.raw_payload["page_content"]["guide_safety_notes"]
 
 
 def test_daily_update_cli_records_added_updated_and_deleted_tools(tmp_path, monkeypatch, capsys, db_session):

@@ -141,11 +141,6 @@ export function ToolListPage() {
                 <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-xs">{tool.type}</span>
               </div>
               <p className="mt-2 line-clamp-4 text-sm leading-6 text-slate-600">{tool.summary}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {tool.tags.map((tag) => (
-                  <span key={tag.slug} className="rounded-full bg-blue-50 px-2 py-1 text-xs text-blue-700">{tag.name}</span>
-                ))}
-              </div>
             </Link>
           ))}
         </div>

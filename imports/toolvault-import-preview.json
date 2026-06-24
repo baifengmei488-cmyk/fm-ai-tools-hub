@@ -1,19 +1,19 @@
 {
   "source": "claude_local_scan",
-  "generated_at": "2026-06-22T00:00:00+08:00",
+  "generated_at": "2026-06-24T07:18:10+08:00",
   "sources": [
     {
       "title": "本地 Claude Code 工具配置检查",
       "url": "",
       "source_type": "local_command_output",
-      "checked_at": "2026-06-23T08:57:00+08:00",
+      "checked_at": "2026-06-24T07:18:10+08:00",
       "note": "使用本地只读命令检查 Claude Code、MCP、插件和 CLI 工具状态，结果已脱敏。"
     },
     {
       "title": "桌面参考使用指南",
       "url": "",
       "source_type": "manual_reference",
-      "checked_at": "2026-06-23T08:57:00+08:00",
+      "checked_at": "2026-06-24T07:18:10+08:00",
       "note": "参考用户本地授权文档整理工具使用场景、提示词和安全边界。"
     }
   ],
@@ -21,9 +21,33 @@
     {
       "title": "补充 FM AI Tools Hub 工具使用指南和导航页面",
       "change_type": "guide_update",
-      "description": "完善工具详情、工作流、提示词、命令速查和使用导航，覆盖当前记录的 AI 与开发工具。",
-      "tool_slugs": ["claude-code", "playwright-mcp", "github-mcp", "mysql-mcp", "firecrawl-mcp", "time-mcp", "openspec", "spec-kit", "uv", "picgo", "frontend-design", "skill-creator", "superpowers-skills"],
-      "page_paths": ["/tools", "/workflows", "/prompts", "/commands", "/guides", "/updates"]
+      "description": "完善工具详情、首页推荐、工作流、提示词、命令速查和使用导航，覆盖当前记录与本机扫描到的 AI 与开发工具。",
+      "tool_slugs": [
+        "claude-code",
+        "context7-mcp",
+        "firecrawl-mcp",
+        "frontend-design",
+        "github-mcp",
+        "mysql-mcp",
+        "notion-mcp",
+        "openspec",
+        "picgo",
+        "playwright-mcp",
+        "sentry-mcp",
+        "skill-creator",
+        "spec-kit",
+        "superpowers-skills",
+        "time-mcp",
+        "ui-ux-pro-max",
+        "uv"
+      ],
+      "page_paths": [
+        "/tools",
+        "/workflows",
+        "/guides",
+        "/updates",
+        "/"
+      ]
     }
   ],
   "tools": [
@@ -500,5 +524,1052 @@
         }
       ]
     }
-  ]
+  ],
+  "page_content": {
+    "home_highlights": [
+      {
+        "title": "真实浏览器验收与页面排错",
+        "description": "适合检查前端页面是否连到正确 API、长篇指南是否可读、控制台是否报错。先用 Claude Code 启动项目，再用 Playwright MCP 打开页面、点击入口、查看网络请求和截图。",
+        "tools": [
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Frontend Design plugin",
+            "slug": "frontend-design",
+            "type": "skill"
+          }
+        ]
+      },
+      {
+        "title": "公开资料整理成可执行使用指南",
+        "description": "适合把公开文档、发布说明和参考资料整理进工具详情页。Firecrawl 负责读取公开页面，Claude Code 负责对比现有指南、补充新增能力和输出更新日志。",
+        "tools": [
+          {
+            "name": "Firecrawl MCP",
+            "slug": "firecrawl-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Context7 MCP",
+            "slug": "context7-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "title": "PR、Issue 与回归测试联动",
+        "description": "适合从 GitHub issue/PR 读取改动范围，生成测试清单，再用浏览器和数据库只读查询验证关键流程。",
+        "tools": [
+          {
+            "name": "GitHub MCP",
+            "slug": "github-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "MySQL MCP",
+            "slug": "mysql-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "title": "规格驱动开发和任务拆分",
+        "description": "适合在需求还不清楚或改动较大时，先把目标、范围、非目标、任务和验收标准写清楚，再交给 Claude Code 实现。",
+        "tools": [
+          {
+            "name": "OpenSpec",
+            "slug": "openspec",
+            "type": "cli"
+          },
+          {
+            "name": "Spec Kit",
+            "slug": "spec-kit",
+            "type": "cli"
+          },
+          {
+            "name": "Superpowers Skills",
+            "slug": "superpowers-skills",
+            "type": "skill"
+          }
+        ]
+      },
+      {
+        "title": "UI 设计质量与交互优化",
+        "description": "适合把能用但普通的页面改成更清晰、更现代、更适合真实用户阅读的界面，包含布局、视觉层级、响应式和长文档阅读体验。",
+        "tools": [
+          {
+            "name": "Frontend Design plugin",
+            "slug": "frontend-design",
+            "type": "skill"
+          },
+          {
+            "name": "UI UX Pro Max",
+            "slug": "ui-ux-pro-max",
+            "type": "skill"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "title": "产品知识库和团队协作资料",
+        "description": "适合把工具文档、会议资料、项目说明和页面验收报告沉淀成可检索、可链接、可持续更新的知识库。",
+        "tools": [
+          {
+            "name": "Notion MCP",
+            "slug": "notion-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "PicGo",
+            "slug": "picgo",
+            "type": "desktop_app"
+          }
+        ]
+      }
+    ],
+    "workflows": [
+      {
+        "title": "页面内容异常定位工作流",
+        "flow": "先用 Claude Code 确认当前前端地址、后端地址和数据库；再用 Playwright MCP 打开页面查看控制台和网络请求；如果数据来自导入日志，再用后端 API 或只读数据库核对 ImportBatch 和工具表。输入是异常页面 URL 和预期内容，输出是问题所在层级、证据和最小修复范围。验收方式是重新打开页面并确认 API、页面和日志一致。",
+        "prompt": "页面内容不对。请先确认浏览器打开的是哪个前端地址，实际请求哪个 API，再检查后端返回、数据库导入批次和更新日志，不要直接猜原因。",
+        "tools": [
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "MySQL MCP",
+            "slug": "mysql-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "title": "工具详情指南每日对比更新工作流",
+        "flow": "读取当前工具详情页已有指南，整理已有章节和仍然有效的内容；只检索公开官方或明确授权来源；对比新增能力、命令变化、限制变化和排错信息；只更新有证据的部分，不确定内容标记为未确认。输入是工具 slug 和资料来源，输出是更新后的 summary、guide Markdown、sources 和字段级 change_details。验收方式是详情页能回答“安装后怎么用、能帮我做什么、什么时候该用”。",
+        "prompt": "请为 {tool_slug} 对比更新使用指南：先读取当前页面已有内容，再只基于公开官方或授权资料补充新增能力、命令、排错和安全边界，不要覆盖仍然正确的内容。",
+        "tools": [
+          {
+            "name": "Firecrawl MCP",
+            "slug": "firecrawl-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Context7 MCP",
+            "slug": "context7-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          }
+        ]
+      },
+      {
+        "title": "PR 验收和回归范围生成工作流",
+        "flow": "用 GitHub MCP 读取 PR 描述、文件变更、review 和 CI；让 Claude Code 对照本地代码判断影响范围；用 Playwright MCP 验证关键页面；如涉及数据库，只用 MySQL MCP 执行 SELECT 抽样确认。输入是 PR 或 issue 编号，输出是测试清单、已验证项目、阻塞问题和风险。",
+        "prompt": "查看 PR #{number}，总结改动范围和必须回归的页面/API；随后用浏览器验证关键路径，并给出测试结论。",
+        "tools": [
+          {
+            "name": "GitHub MCP",
+            "slug": "github-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "MySQL MCP",
+            "slug": "mysql-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "title": "规格到实现的受控开发工作流",
+        "flow": "需求较大时先用 OpenSpec 或 Spec Kit 写清目标、范围、非目标和验收标准；Superpowers 约束 brainstorm、plan、TDD 和完成前验证；Claude Code 按计划最小改动实现。输入是原始需求，输出是规格、任务、代码改动和验证记录。验收方式是每条任务都有测试或浏览器证据。",
+        "prompt": "这个需求请按规格驱动流程处理：先拆目标、非目标和验收标准，再写计划，确认后用 TDD/验证流程实现。",
+        "tools": [
+          {
+            "name": "OpenSpec",
+            "slug": "openspec",
+            "type": "cli"
+          },
+          {
+            "name": "Spec Kit",
+            "slug": "spec-kit",
+            "type": "cli"
+          },
+          {
+            "name": "Superpowers Skills",
+            "slug": "superpowers-skills",
+            "type": "skill"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          }
+        ]
+      },
+      {
+        "title": "公开文档到测试点和知识库工作流",
+        "flow": "Firecrawl 抓取公开文档或 changelog，Context7 辅助查库和 API 文档；Claude Code 提炼新增功能、限制、命令和测试关注点；PicGo 只用于人工上传已脱敏截图。输入是公开 URL 或授权资料，输出是摘要、测试点、工具指南更新和来源记录。",
+        "prompt": "抓取这个公开文档并整理成：新增能力、使用步骤、命令示例、测试点、排错和安全边界；不要抓取登录后或未授权内容。",
+        "tools": [
+          {
+            "name": "Firecrawl MCP",
+            "slug": "firecrawl-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Context7 MCP",
+            "slug": "context7-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "PicGo",
+            "slug": "picgo",
+            "type": "desktop_app"
+          }
+        ]
+      },
+      {
+        "title": "错误监控到修复验证工作流",
+        "flow": "Sentry MCP 用于读取授权项目中的错误事件和上下文；Claude Code 回到本地仓库定位代码路径并写回归测试；Playwright MCP 或后端测试复现并验证修复。输入是 Sentry issue 或错误摘要，输出是根因、修复 diff、回归测试和验证证据。",
+        "prompt": "查看这个 Sentry 错误的安全摘要，定位本地代码根因，先写失败测试，再修复并用浏览器或测试命令验证。",
+        "tools": [
+          {
+            "name": "Sentry MCP",
+            "slug": "sentry-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "title": "Notion 项目资料整理工作流",
+        "flow": "Notion MCP 读取授权页面或数据库内容；Claude Code 把需求、验收、会议结论或发布说明转换成项目计划、指南或更新日志；Time MCP 统一日期和时区。输入是授权 Notion 页面，输出是结构化需求、任务清单或可写入 ToolVault 的资料摘要。",
+        "prompt": "读取这个授权 Notion 页面，提炼目标、决策、待办、截止日期和可写入工具指南的内容；所有相对日期转成绝对日期。",
+        "tools": [
+          {
+            "name": "Notion MCP",
+            "slug": "notion-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Time MCP",
+            "slug": "time-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          }
+        ]
+      }
+    ],
+    "tool_combinations": [
+      {
+        "title": "Claude Code + Playwright MCP + MySQL MCP：从页面到数据闭环验证",
+        "flow": "Claude Code 负责理解代码和启动服务，Playwright MCP 负责真实浏览器操作和网络/控制台观察，MySQL MCP 只读核对数据落库或查询结果。适合排查页面数据不一致、导入后不刷新、表单提交后状态不对。",
+        "prompt": "请从页面、API、数据库三层验证这个功能：浏览器看实际表现，网络请求看 API，数据库只读查询确认数据。",
+        "tools": [
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "MySQL MCP",
+            "slug": "mysql-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "title": "Firecrawl MCP + Context7 MCP + Claude Code：资料更新和指南补全",
+        "flow": "Firecrawl 读取公开网页，Context7 查公开库文档或 API 用法，Claude Code 把新资料与现有 guide 对比，只补充有证据的能力和示例。适合每日更新工具指南和页面内容。",
+        "prompt": "请先列出来源和当前指南差异，再更新指南；不要把未验证资料写成确定事实。",
+        "tools": [
+          {
+            "name": "Firecrawl MCP",
+            "slug": "firecrawl-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Context7 MCP",
+            "slug": "context7-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          }
+        ]
+      },
+      {
+        "title": "GitHub MCP + Sentry MCP + Playwright MCP：线上问题回归",
+        "flow": "从 Sentry 错误和 GitHub 变更定位影响范围，再用 Playwright MCP 重放用户路径。适合修复线上报错、PR 回归和发布前冒烟。",
+        "prompt": "结合错误事件和最近代码变更，给出最小复现路径并用浏览器验证修复。",
+        "tools": [
+          {
+            "name": "GitHub MCP",
+            "slug": "github-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Sentry MCP",
+            "slug": "sentry-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "title": "Frontend Design + UI UX Pro Max + PicGo：高质量界面和报告素材",
+        "flow": "Frontend Design 负责页面信息架构和视觉实现，UI UX Pro Max 负责更细的体验评审，PicGo 用于人工上传已脱敏截图到报告或文档。适合长文档详情页、管理后台和测试报告。",
+        "prompt": "请先评审页面阅读体验，再提出可实现的 UI 改动；截图如需外发必须先脱敏。",
+        "tools": [
+          {
+            "name": "Frontend Design plugin",
+            "slug": "frontend-design",
+            "type": "skill"
+          },
+          {
+            "name": "UI UX Pro Max",
+            "slug": "ui-ux-pro-max",
+            "type": "skill"
+          },
+          {
+            "name": "PicGo",
+            "slug": "picgo",
+            "type": "desktop_app"
+          }
+        ]
+      }
+    ],
+    "prompt_groups": [
+      {
+        "title": "页面与端口排错提示词",
+        "description": "用于确认浏览器打开的地址、前端 API base、后端端口和数据库是否一致。",
+        "tools": [
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "prompts": [
+          "页面内容不对。请先检查当前浏览器 URL、前端实际请求的 API 地址、后端健康检查和数据库路径，再判断是哪一层数据不一致。",
+          "启动项目后请只使用脚本输出的地址验证；如果发现旧端口还可访问，请查出旧进程并说明是否属于 ToolVault。",
+          "用浏览器打开 {url}，检查控制台 error、网络请求失败和页面实际展示的工具数量。"
+        ]
+      },
+      {
+        "title": "工具指南对比更新提示词",
+        "description": "用于每日更新工具详情页，强调保留已有有效内容、只补充新证据。",
+        "tools": [
+          {
+            "name": "Firecrawl MCP",
+            "slug": "firecrawl-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Context7 MCP",
+            "slug": "context7-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          }
+        ],
+        "prompts": [
+          "为 {tool_slug} 更新指南：先读取当前详情页已有内容，列出仍然有效的章节，再只基于公开官方或授权资料补充新增能力、命令和排错。",
+          "不要只写安装指南。请回答：安装后怎么用、能帮助我做什么、什么时候该用、常用提示词是什么、如何验证结果。",
+          "输出更新日志 change_details：工具 slug、页面路径、栏目、字段、修改前摘要、修改后摘要和来源。"
+        ]
+      },
+      {
+        "title": "PR 验收提示词",
+        "description": "用于从 GitHub 改动生成回归范围，并驱动浏览器或数据库验证。",
+        "tools": [
+          {
+            "name": "GitHub MCP",
+            "slug": "github-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "MySQL MCP",
+            "slug": "mysql-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "prompts": [
+          "查看 PR #{number}，按页面、API、数据库、配置四类总结影响范围，并列出必须回归的路径。",
+          "根据这个 issue 的复现步骤，用浏览器实际复现；记录输入、点击、页面提示、网络请求和最终结果。",
+          "如果涉及数据变化，只用 SELECT 查询必要字段，避免读取敏感字段，并限制返回行数。"
+        ]
+      },
+      {
+        "title": "规格与计划提示词",
+        "description": "用于把模糊需求变成可执行规格、任务和验收标准。",
+        "tools": [
+          {
+            "name": "OpenSpec",
+            "slug": "openspec",
+            "type": "cli"
+          },
+          {
+            "name": "Spec Kit",
+            "slug": "spec-kit",
+            "type": "cli"
+          },
+          {
+            "name": "Superpowers Skills",
+            "slug": "superpowers-skills",
+            "type": "skill"
+          }
+        ],
+        "prompts": [
+          "请把这个需求拆成目标、非目标、用户场景、数据流、验收标准和风险，先不要写代码。",
+          "用规格驱动方式生成 tasks：每个任务写清涉及文件、失败测试、实现步骤和验证命令。",
+          "这个需求是否太大？请判断是否需要拆成多个独立变更，并给出推荐顺序。"
+        ]
+      },
+      {
+        "title": "UI/UX 评审提示词",
+        "description": "用于让 Claude 不只改代码，还检查页面可读性、视觉层级和响应式。",
+        "tools": [
+          {
+            "name": "Frontend Design plugin",
+            "slug": "frontend-design",
+            "type": "skill"
+          },
+          {
+            "name": "UI UX Pro Max",
+            "slug": "ui-ux-pro-max",
+            "type": "skill"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "prompts": [
+          "检查这个页面的 UI/UX：信息层级、卡片密度、间距、对比度、移动端、空状态和错误状态。",
+          "优化工具详情页长篇 Markdown 阅读体验：目录、标题层级、代码块、表格、引用、安全提示都要清晰。",
+          "修改 UI 后请启动真实页面，用浏览器检查桌面和移动端宽度，并读取控制台错误。"
+        ]
+      },
+      {
+        "title": "监控和知识库提示词",
+        "description": "用于把 Sentry、Notion 和 Time MCP 的授权信息转成可执行排障或计划材料。",
+        "tools": [
+          {
+            "name": "Sentry MCP",
+            "slug": "sentry-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Notion MCP",
+            "slug": "notion-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Time MCP",
+            "slug": "time-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "prompts": [
+          "读取这个授权错误事件，提取错误类型、影响范围、最近发生时间、可复现线索和需要本地验证的假设。",
+          "读取这个授权 Notion 页面，整理成目标、决策、待办、负责人、绝对日期和风险。",
+          "把所有相对时间转换为 Asia/Shanghai 的绝对时间，再写入计划或更新日志。"
+        ]
+      }
+    ],
+    "command_groups": [
+      {
+        "title": "ToolVault 本地启动与端口验证",
+        "tools": [
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "uv",
+            "slug": "uv",
+            "type": "cli"
+          }
+        ],
+        "commands": [
+          "TOOLVAULT_BACKEND_PORT=8188 TOOLVAULT_FRONTEND_PORT=5288 scripts/run-dev.sh",
+          "curl -fsS http://127.0.0.1:8188/api/health",
+          "curl -fsS http://127.0.0.1:8188/api/page-content"
+        ],
+        "note": "运行位置是仓库根目录。脚本会清理旧 ToolVault dev 进程并打印本次唯一有效的前后端地址；如果默认 8000/5173 被非 ToolVault 进程占用，就显式指定端口。"
+      },
+      {
+        "title": "每日内容刷新命令",
+        "tools": [
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "uv",
+            "slug": "uv",
+            "type": "cli"
+          },
+          {
+            "name": "Time MCP",
+            "slug": "time-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "commands": [
+          "uv run --directory backend python -m app.cli.daily_update --payload ../imports/toolvault-import-preview.json --content-plan ../imports/page-content-plan.json --scan-installed",
+          "uv run --directory backend python -m app.cli.daily_update --help"
+        ],
+        "note": "运行前先更新 generated_at、sources、changes 和 page_content；命令会扫描本机 MCP/plugin 并写入更新日志。输出应包含 content_plan_items、change_details、page_content_sections、changed_pages 和 update_log_verified。"
+      },
+      {
+        "title": "Claude Code 与 MCP 检查",
+        "tools": [
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "GitHub MCP",
+            "slug": "github-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Firecrawl MCP",
+            "slug": "firecrawl-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Context7 MCP",
+            "slug": "context7-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "commands": [
+          "claude --version",
+          "claude mcp list",
+          "claude mcp get playwright",
+          "claude mcp get github",
+          "claude mcp get firecrawl",
+          "claude mcp get context7"
+        ],
+        "note": "只检查工具状态，不输出真实密钥。需要密钥的 MCP 只记录是否 configured/needs authentication，不把环境变量值写入日志。"
+      },
+      {
+        "title": "Claude Code plugin / skill 检查",
+        "tools": [
+          {
+            "name": "Frontend Design plugin",
+            "slug": "frontend-design",
+            "type": "skill"
+          },
+          {
+            "name": "Skill Creator plugin",
+            "slug": "skill-creator",
+            "type": "skill"
+          },
+          {
+            "name": "Superpowers Skills",
+            "slug": "superpowers-skills",
+            "type": "skill"
+          },
+          {
+            "name": "UI UX Pro Max",
+            "slug": "ui-ux-pro-max",
+            "type": "skill"
+          }
+        ],
+        "commands": [
+          "claude plugin list",
+          "/reload-plugins"
+        ],
+        "note": "插件变更后可在 Claude Code 里运行 /reload-plugins。命令清单只记录插件名、scope 和启用状态，不记录本机隐私配置。"
+      },
+      {
+        "title": "后端迁移、测试和构建验证",
+        "tools": [
+          {
+            "name": "uv",
+            "slug": "uv",
+            "type": "cli"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          }
+        ],
+        "commands": [
+          "uv run --directory backend alembic upgrade head",
+          "uv run --directory backend pytest -q",
+          "uv run --directory backend pytest tests/test_daily_update_cli.py tests/test_import_service.py -q",
+          "npm --prefix frontend run build"
+        ],
+        "note": "提交前用目标测试证明修复，再用完整后端测试或前端构建做回归；不要把本地 SQLite 数据库提交到仓库。"
+      },
+      {
+        "title": "规格驱动工具命令",
+        "tools": [
+          {
+            "name": "OpenSpec",
+            "slug": "openspec",
+            "type": "cli"
+          },
+          {
+            "name": "Spec Kit",
+            "slug": "spec-kit",
+            "type": "cli"
+          },
+          {
+            "name": "uv",
+            "slug": "uv",
+            "type": "cli"
+          }
+        ],
+        "commands": [
+          "openspec --version",
+          "openspec init",
+          "specify version",
+          "specify self check",
+          "uv tool list"
+        ],
+        "note": "初始化类命令会创建文件，建议在干净分支或 worktree 中执行。版本检查和 self check 可直接运行。"
+      },
+      {
+        "title": "桌面与资料工具命令",
+        "tools": [
+          {
+            "name": "PicGo",
+            "slug": "picgo",
+            "type": "desktop_app"
+          },
+          {
+            "name": "Notion MCP",
+            "slug": "notion-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Sentry MCP",
+            "slug": "sentry-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "commands": [
+          "open -a PicGo",
+          "claude mcp get notion",
+          "claude mcp get sentry"
+        ],
+        "note": "PicGo 上传前先脱敏截图。Notion/Sentry 只读取授权内容，不把内部页面、客户数据或错误原文中的敏感字段写入公开指南。"
+      }
+    ],
+    "guide_choices": [
+      {
+        "need": "我想让 Claude 直接改代码、跑测试、启动服务、验证页面",
+        "tools": [
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "uv",
+            "slug": "uv",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "need": "我想检查网页是否真实可用、按钮是否能点、控制台是否报错",
+        "tools": [
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Frontend Design plugin",
+            "slug": "frontend-design",
+            "type": "skill"
+          },
+          {
+            "name": "UI UX Pro Max",
+            "slug": "ui-ux-pro-max",
+            "type": "skill"
+          }
+        ]
+      },
+      {
+        "need": "我想把公开资料、发布说明或文档整理成指南",
+        "tools": [
+          {
+            "name": "Firecrawl MCP",
+            "slug": "firecrawl-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Context7 MCP",
+            "slug": "context7-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          }
+        ]
+      },
+      {
+        "need": "我想看 GitHub PR、issue、review、CI 并生成测试范围",
+        "tools": [
+          {
+            "name": "GitHub MCP",
+            "slug": "github-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "need": "我想只读核对数据库里的表结构、数量或测试数据",
+        "tools": [
+          {
+            "name": "MySQL MCP",
+            "slug": "mysql-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          }
+        ]
+      },
+      {
+        "need": "我想先把需求写清楚，不希望直接开始乱改",
+        "tools": [
+          {
+            "name": "OpenSpec",
+            "slug": "openspec",
+            "type": "cli"
+          },
+          {
+            "name": "Spec Kit",
+            "slug": "spec-kit",
+            "type": "cli"
+          },
+          {
+            "name": "Superpowers Skills",
+            "slug": "superpowers-skills",
+            "type": "skill"
+          }
+        ]
+      },
+      {
+        "need": "我想把页面做得更好看、更易读、更适合真实用户",
+        "tools": [
+          {
+            "name": "Frontend Design plugin",
+            "slug": "frontend-design",
+            "type": "skill"
+          },
+          {
+            "name": "UI UX Pro Max",
+            "slug": "ui-ux-pro-max",
+            "type": "skill"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "need": "我想把错误监控、项目文档或计划资料变成可执行任务",
+        "tools": [
+          {
+            "name": "Sentry MCP",
+            "slug": "sentry-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Notion MCP",
+            "slug": "notion-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Time MCP",
+            "slug": "time-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      },
+      {
+        "need": "我想上传测试截图或文档插图，但不希望暴露敏感信息",
+        "tools": [
+          {
+            "name": "PicGo",
+            "slug": "picgo",
+            "type": "desktop_app"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          }
+        ]
+      }
+    ],
+    "guide_workflow_tips": [
+      {
+        "scenario": "新增 MCP 或 plugin 后，工具详情页内容不能只写安装命令",
+        "tools": [
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "Firecrawl MCP",
+            "slug": "firecrawl-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Context7 MCP",
+            "slug": "context7-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "suggestion": "先扫描本机工具状态，再读取已有详情页内容；有公开资料时对比更新能力、命令、提示词和排错，没有公开资料时生成明确标记的基础指南，并在更新日志里记录未验证范围。"
+      },
+      {
+        "scenario": "页面上显示的数据和预期不一致",
+        "tools": [
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Claude Code",
+            "slug": "claude-code",
+            "type": "cli"
+          },
+          {
+            "name": "MySQL MCP",
+            "slug": "mysql-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "suggestion": "不要只看代码。先用浏览器确认 URL 和网络请求，再用 API 和数据库只读查询核对最新导入批次，最后修复产生差异的那一层。"
+      },
+      {
+        "scenario": "需求不清楚、容易越做越大",
+        "tools": [
+          {
+            "name": "OpenSpec",
+            "slug": "openspec",
+            "type": "cli"
+          },
+          {
+            "name": "Spec Kit",
+            "slug": "spec-kit",
+            "type": "cli"
+          },
+          {
+            "name": "Superpowers Skills",
+            "slug": "superpowers-skills",
+            "type": "skill"
+          }
+        ],
+        "suggestion": "先写目标、非目标、页面范围和验收标准，再拆任务。只有确认范围后才进入实现，避免一次改动同时引入无关重构。"
+      },
+      {
+        "scenario": "PR 或 issue 需要验收",
+        "tools": [
+          {
+            "name": "GitHub MCP",
+            "slug": "github-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Playwright MCP",
+            "slug": "playwright-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "MySQL MCP",
+            "slug": "mysql-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "suggestion": "先读 PR 文件变更和 review，再列出页面/API/数据库/配置影响范围。用浏览器跑主流程，如涉及数据只 SELECT 必要字段确认。"
+      },
+      {
+        "scenario": "需要提升页面设计质量",
+        "tools": [
+          {
+            "name": "Frontend Design plugin",
+            "slug": "frontend-design",
+            "type": "skill"
+          },
+          {
+            "name": "UI UX Pro Max",
+            "slug": "ui-ux-pro-max",
+            "type": "skill"
+          },
+          {
+            "name": "PicGo",
+            "slug": "picgo",
+            "type": "desktop_app"
+          }
+        ],
+        "suggestion": "先评审信息层级、视觉重点和阅读路径，再做最小 UI 改动；截图只用于验证和报告，上传前必须脱敏。"
+      },
+      {
+        "scenario": "需要从监控或知识库资料推进修复",
+        "tools": [
+          {
+            "name": "Sentry MCP",
+            "slug": "sentry-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Notion MCP",
+            "slug": "notion-mcp",
+            "type": "mcp_server"
+          },
+          {
+            "name": "Time MCP",
+            "slug": "time-mcp",
+            "type": "mcp_server"
+          }
+        ],
+        "suggestion": "只读取授权内容，先提取安全摘要、时间线、影响范围和可复现线索，再回到本地代码和测试验证，不把内部原文写进公开页面。"
+      }
+    ],
+    "guide_safety_notes": [
+      "所有工具指南、命令和页面内容都不得包含真实 API Key、token、cookie、密码、私钥、生产连接串、客户数据或内部敏感 URL。",
+      "Firecrawl、Context7、Notion、Sentry 只能读取公开或明确授权内容；需要登录、付费墙、内部系统或未授权页面时不要绕过访问控制。",
+      "MySQL MCP 在 ToolVault 中按只读工具记录，只执行 SELECT 或结构查询；写入、删除、迁移和生产库操作必须走应用或人工审核流程。",
+      "Playwright MCP 用于功能验证和截图，不用于压测、高频请求、批量注册、绕过权限或破坏性操作。",
+      "GitHub MCP 的评论、创建 PR、合并、关闭 issue、推送文件等对外可见动作必须先获得明确授权。",
+      "PicGo 上传图片前必须脱敏；公共图床上的图片通常不能可靠收回。",
+      "生成的 fallback 指南必须明确标注未核对官方资料，不能把猜测写成官方能力。",
+      "更新日志只记录安全摘要、来源和字段级变化；敏感扫描失败时不打印也不保存原始敏感内容。"
+    ]
+  }
 }

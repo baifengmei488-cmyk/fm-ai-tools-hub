@@ -87,11 +87,11 @@
     "status": "planned"
   },
   {
-    "page_path": "/prompts",
-    "page_name": "提示词模板页",
-    "section": "可复制提示词",
+    "page_path": "/workflows",
+    "page_name": "推荐工作流页",
+    "section": "提示词模板",
     "required_content": [
-      "按场景提供可复制提示词，并说明应搭配哪些工具使用。",
+      "在工作流页的提示词 tab 中按场景提供可复制提示词，并说明应搭配哪些工具使用。",
       "提示词要包含输入占位、期望输出、验证方式和安全限制。",
       "涉及工具名称时必须能引导用户跳转到工具详情页。"
     ],
@@ -99,11 +99,11 @@
     "status": "planned"
   },
   {
-    "page_path": "/commands",
-    "page_name": "命令速查页",
+    "page_path": "/workflows",
+    "page_name": "推荐工作流页",
     "section": "命令清单",
     "required_content": [
-      "列出常用命令、用途、运行位置和关联工具。",
+      "在工作流页的命令 tab 中列出常用命令、用途、运行位置和关联工具。",
       "命令示例使用占位符，不展示真实密钥或本机敏感路径。",
       "每天更新时检查新安装 MCP、plugin、CLI 是否需要补充命令。"
     ],

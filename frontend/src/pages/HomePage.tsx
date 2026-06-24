@@ -12,13 +12,13 @@ const navigationCards = [
   {
     title: '测试提示词模板',
     description: '沉淀生成测试用例、冒烟测试、失败分析和测试结论的可复制提示词。',
-    link: '/prompts',
+    link: '/workflows?tab=prompts',
     linkText: '查看提示词',
   },
   {
     title: '快速命令汇总',
     description: '集中查看 MCP、OpenSpec、uv、Spec Kit、Claude Code 插件和 PicGo 的常用命令。',
-    link: '/commands',
+    link: '/workflows?tab=commands',
     linkText: '查看速查',
   },
   {
@@ -63,7 +63,7 @@ export function HomePage() {
         <p className="text-sm font-semibold uppercase tracking-wide text-blue-200">开发 / 测试工具知识库</p>
         <h1 className="mt-3 text-4xl font-bold">FM AI Tools Hub</h1>
         <p className="mt-4 max-w-3xl leading-7 text-slate-200">
-          记录 Claude Code MCP、插件、skills、CLI 工具、桌面应用和数据库工具，并把桌面指南里的总结性内容整理成“工具库 + 工作流 + 提示词 + 命令速查”的实用入口。
+          记录 Claude Code MCP、插件、skills、CLI 工具、桌面应用和数据库工具，并把桌面指南里的总结性内容整理成“工具库 + 综合工作流 + 使用指南 + 更新日志”的实用入口。
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link className="inline-flex rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition hover:bg-blue-500" to="/tools">

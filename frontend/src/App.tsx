@@ -1,11 +1,9 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { HomePage } from './pages/HomePage';
 import { ToolListPage } from './pages/ToolListPage';
 import { ToolDetailPage } from './pages/ToolDetailPage';
 import { WorkflowPage } from './pages/WorkflowPage';
-import { PromptTemplatePage } from './pages/PromptTemplatePage';
-import { CommandPage } from './pages/CommandPage';
 import { GuideNavigationPage } from './pages/GuideNavigationPage';
 import { UpdateLogPage } from './pages/UpdateLogPage';
 import { LoginPage } from './pages/LoginPage';
@@ -21,8 +19,8 @@ const router = createBrowserRouter([
       { path: 'tools', element: <ToolListPage /> },
       { path: 'tools/:slug', element: <ToolDetailPage /> },
       { path: 'workflows', element: <WorkflowPage /> },
-      { path: 'prompts', element: <PromptTemplatePage /> },
-      { path: 'commands', element: <CommandPage /> },
+      { path: 'prompts', element: <Navigate to="/workflows?tab=prompts" replace /> },
+      { path: 'commands', element: <Navigate to="/workflows?tab=commands" replace /> },
       { path: 'guides', element: <GuideNavigationPage /> },
       { path: 'updates', element: <UpdateLogPage /> },
       { path: 'login', element: <LoginPage /> },

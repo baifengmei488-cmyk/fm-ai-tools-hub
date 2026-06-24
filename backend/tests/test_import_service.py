@@ -34,6 +34,53 @@ def _payload(summary="Browser automation"):
     )
 
 
+def _page_content():
+    tool_ref = {"name": "Playwright MCP", "slug": "playwright-mcp", "type": "mcp"}
+    return {
+        "home_highlights": [
+            {
+                "title": "保留的首页推荐",
+                "description": "上一轮人工整理过的首页推荐内容。",
+                "tools": [tool_ref],
+            }
+        ],
+        "workflows": [
+            {
+                "title": "保留的工作流",
+                "flow": "上一轮整理的完整工作流。",
+                "prompt": "按上一轮沉淀的步骤继续验证。",
+                "tools": [tool_ref],
+            }
+        ],
+        "tool_combinations": [],
+        "prompt_groups": [
+            {
+                "title": "保留的提示词组",
+                "description": "上一轮整理的提示词。",
+                "tools": [tool_ref],
+                "prompts": ["保留这条提示词，不要被下一轮导入清空。"],
+            }
+        ],
+        "command_groups": [
+            {
+                "title": "保留的命令组",
+                "tools": [tool_ref],
+                "commands": ["claude mcp get playwright"],
+                "note": "上一轮验证过的命令。",
+            }
+        ],
+        "guide_choices": [{"need": "保留的导航选择", "tools": [tool_ref]}],
+        "guide_workflow_tips": [
+            {
+                "scenario": "保留的导航场景",
+                "tools": [tool_ref],
+                "suggestion": "上一轮整理的导航建议。",
+            }
+        ],
+        "guide_safety_notes": ["保留上一轮安全说明。"],
+    }
+
+
 def test_preview_counts_payload_items():
     preview = preview_tool_payload(_payload())
 
@@ -120,9 +167,10 @@ def test_import_generates_page_content_for_visible_pages(db_session):
 
 def test_import_records_page_content_change_detail(db_session):
     first = _payload()
+    first.page_content = _page_content()
     second = _payload()
     second.page_content = {
-        "home_highlights": [],
+        **_page_content(),
         "workflows": [
             {
                 "title": "Context research",
@@ -131,12 +179,6 @@ def test_import_records_page_content_change_detail(db_session):
                 "tools": [{"name": "Playwright MCP", "slug": "playwright-mcp", "type": "mcp"}],
             }
         ],
-        "tool_combinations": [],
-        "prompt_groups": [],
-        "command_groups": [],
-        "guide_choices": [],
-        "guide_workflow_tips": [],
-        "guide_safety_notes": [],
     }
 
     import_tool_payload(db_session, first)
@@ -151,6 +193,100 @@ def test_import_records_page_content_change_detail(db_session):
         and detail["change_type"] == "updated"
         for detail in details
     )
+
+
+def test_import_records_prompt_and_command_changes_on_workflow_page(db_session):
+    first = _payload()
+    first.page_content = _page_content()
+    second = _payload()
+    second.page_content = {
+        **_page_content(),
+        "prompt_groups": [
+            {
+                "title": "工作流页提示词",
+                "description": "合并到工作流页提示词 tab。",
+                "tools": [{"name": "Playwright MCP", "slug": "playwright-mcp", "type": "mcp"}],
+                "prompts": ["在工作流页提示词 tab 中展示。"],
+            }
+        ],
+        "command_groups": [
+            {
+                "title": "工作流页命令",
+                "tools": [{"name": "Playwright MCP", "slug": "playwright-mcp", "type": "mcp"}],
+                "commands": ["claude mcp get playwright"],
+                "note": "合并到工作流页命令 tab。",
+            }
+        ],
+    }
+
+    import_tool_payload(db_session, first)
+    import_tool_payload(db_session, second, remove_missing=True)
+
+    batch = db_session.query(ImportBatch).order_by(ImportBatch.id.desc()).first()
+    details = batch.raw_payload["changes"][0]["change_details"]
+    assert any(
+        detail["page_path"] == "/workflows"
+        and detail["section"] == "提示词模板"
+        and detail["field"] == "page_content.prompt_groups"
+        for detail in details
+    )
+    assert any(
+        detail["page_path"] == "/workflows"
+        and detail["section"] == "命令清单"
+        and detail["field"] == "page_content.command_groups"
+        for detail in details
+    )
+    assert not any(detail["page_path"] in {"/prompts", "/commands"} for detail in details)
+
+
+
+def test_import_preserves_previous_page_content_when_payload_omits_it(db_session):
+    first = _payload()
+    first.page_content = _page_content()
+    second = _payload(summary="Updated summary")
+
+    import_tool_payload(db_session, first)
+    import_tool_payload(db_session, second, remove_missing=True)
+
+    batch = db_session.query(ImportBatch).order_by(ImportBatch.id.desc()).first()
+    page_content = batch.raw_payload["page_content"]
+    assert page_content["home_highlights"][0]["title"] == "保留的首页推荐"
+    assert page_content["workflows"][0]["title"] == "保留的工作流"
+    assert page_content["prompt_groups"][0]["prompts"] == ["保留这条提示词，不要被下一轮导入清空。"]
+    assert "保留上一轮安全说明。" in page_content["guide_safety_notes"]
+
+
+def test_import_merges_partial_page_content_with_previous_sections(db_session):
+    first = _payload()
+    first.page_content = _page_content()
+    second = _payload(summary="Updated summary")
+    second.page_content = {
+        **_page_content(),
+        "home_highlights": [
+            {
+                "title": "新的首页推荐",
+                "description": "本轮只更新首页推荐。",
+                "tools": [{"name": "Playwright MCP", "slug": "playwright-mcp", "type": "mcp"}],
+            }
+        ],
+        "workflows": [],
+        "prompt_groups": [],
+        "command_groups": [],
+        "guide_choices": [],
+        "guide_workflow_tips": [],
+        "guide_safety_notes": [],
+    }
+
+    import_tool_payload(db_session, first)
+    import_tool_payload(db_session, second, remove_missing=True)
+
+    batch = db_session.query(ImportBatch).order_by(ImportBatch.id.desc()).first()
+    page_content = batch.raw_payload["page_content"]
+    assert page_content["home_highlights"][0]["title"] == "新的首页推荐"
+    assert page_content["workflows"][0]["title"] == "保留的工作流"
+    assert page_content["prompt_groups"][0]["title"] == "保留的提示词组"
+    assert page_content["command_groups"][0]["title"] == "保留的命令组"
+    assert "保留上一轮安全说明。" in page_content["guide_safety_notes"]
 
 
 def test_import_records_deleted_tool_change_detail(db_session):

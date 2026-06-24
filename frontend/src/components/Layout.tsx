@@ -9,8 +9,6 @@ export function Layout() {
           <nav className="flex gap-4 text-sm text-slate-600">
             <Link to="/tools">工具库</Link>
             <Link to="/workflows">工作流</Link>
-            <Link to="/prompts">提示词</Link>
-            <Link to="/commands">命令速查</Link>
             <Link to="/guides">使用指南</Link>
             <Link to="/updates">更新日志</Link>
             <Link to="/login">后台登录</Link>

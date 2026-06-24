@@ -19,6 +19,18 @@ class ImportResult:
     deleted_tool_slugs: list[str]
 
 
+PAGE_CONTENT_FIELDS = [
+    "home_highlights",
+    "workflows",
+    "tool_combinations",
+    "prompt_groups",
+    "command_groups",
+    "guide_choices",
+    "guide_workflow_tips",
+    "guide_safety_notes",
+]
+
+
 def slugify(value: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9一-鿿]+", "-", value.strip().lower()).strip("-")
     return slug or "item"
@@ -161,6 +173,57 @@ def _public_tool_refs(payload_data: dict[str, Any]) -> list[dict[str, str]]:
     ]
 
 
+def _page_content_item_key(item: Any) -> str:
+    if isinstance(item, dict):
+        for field in ["title", "need", "scenario"]:
+            value = item.get(field)
+            if isinstance(value, str) and value:
+                return value
+    return str(item)
+
+
+def _tool_ref_key(tool: Any) -> str:
+    if not isinstance(tool, dict):
+        return str(tool)
+    return str(tool.get("slug") or tool.get("name") or tool)
+
+
+def _merge_page_content_items(existing: Any, generated: Any) -> list[Any]:
+    merged = [*existing] if isinstance(existing, list) else []
+    index_by_key = {_page_content_item_key(item): index for index, item in enumerate(merged)}
+    for item in generated if isinstance(generated, list) else []:
+        key = _page_content_item_key(item)
+        if key not in index_by_key:
+            index_by_key[key] = len(merged)
+            merged.append(item)
+            continue
+        target = merged[index_by_key[key]]
+        if not isinstance(target, dict) or not isinstance(item, dict):
+            continue
+        if isinstance(target.get("tools"), list) and isinstance(item.get("tools"), list):
+            tool_keys = {_tool_ref_key(tool) for tool in target["tools"]}
+            target["tools"] = [*target["tools"], *[tool for tool in item["tools"] if _tool_ref_key(tool) not in tool_keys]]
+        for list_field in ["commands", "prompts"]:
+            if isinstance(target.get(list_field), list) and isinstance(item.get(list_field), list):
+                seen = set(target[list_field])
+                target[list_field] = [*target[list_field], *[value for value in item[list_field] if value not in seen]]
+    return merged
+
+
+def _merge_page_content(previous_payload: dict[str, Any], current_payload: dict[str, Any]) -> dict[str, Any]:
+    previous_content = previous_payload.get("page_content") if isinstance(previous_payload.get("page_content"), dict) else {}
+    current_content = current_payload.get("page_content") if isinstance(current_payload.get("page_content"), dict) else {}
+    generated_content = _default_page_content(current_payload)
+    merged = generated_content.copy()
+    for field in PAGE_CONTENT_FIELDS:
+        previous_value = previous_content.get(field)
+        generated_value = generated_content.get(field)
+        current_value = current_content.get(field)
+        base_value = _merge_page_content_items(previous_value, generated_value)
+        merged[field] = current_value if isinstance(current_value, list) and current_value else base_value
+    return merged
+
+
 def _default_page_content(payload_data: dict[str, Any]) -> dict[str, Any]:
     tool_refs = _public_tool_refs(payload_data)
     mcp_tools = [tool for tool in tool_refs if "mcp" in tool["type"]]
@@ -267,8 +330,8 @@ def _page_content_change_details(previous_payload: dict[str, Any], current_paylo
         ("home_highlights", "/", "首页推荐"),
         ("workflows", "/workflows", "推荐组合工作流"),
         ("tool_combinations", "/workflows", "组合使用示例"),
-        ("prompt_groups", "/prompts", "提示词模板"),
-        ("command_groups", "/commands", "命令清单"),
+        ("prompt_groups", "/workflows", "提示词模板"),
+        ("command_groups", "/workflows", "命令清单"),
         ("guide_choices", "/guides", "工具使用导航"),
         ("guide_workflow_tips", "/guides", "常见组合路线"),
         ("guide_safety_notes", "/guides", "安全注意事项"),
@@ -524,8 +587,7 @@ def import_tool_payload(db: Session, payload: ToolImportPayload, remove_missing:
     current_payload_data = payload.model_dump()
     if not current_payload_data.get("content_plan"):
         current_payload_data["content_plan"] = _default_content_plan(payload)
-    if not current_payload_data.get("page_content"):
-        current_payload_data["page_content"] = _default_page_content(current_payload_data)
+    current_payload_data["page_content"] = _merge_page_content(previous_payload_data, current_payload_data)
     current_tools = _payload_tools_by_slug(current_payload_data)
     previous_slugs = set(previous_tools)
     if remove_missing:
