@@ -1,23 +1,1 @@
-import { Link, Outlet } from 'react-router-dom';
-
-export function Layout() {
-  return (
-    <div className="min-h-screen">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" className="text-xl font-bold text-slate-900">FM AI Tools Hub</Link>
-          <nav className="flex gap-4 text-sm text-slate-600">
-            <Link to="/tools">å·¥å…·åº“</Link>
-            <Link to="/workflows">å·¥ä½œæµ</Link>
-            <Link to="/guides">ä½¿ç”¨æŒ‡å—</Link>
-            <Link to="/updates">æ›´æ–°æ—¥å¿—</Link>
-            <Link to="/login">åå°ç™»å½•</Link>
-          </nav>
-        </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-6 py-8">
-        <Outlet />
-      </main>
-    </div>
-  );
-}
+şö«ıú%uêìşn?–g®½î{Ünw`‚ù·.ğÓM4‚ÓşÙ©Ÿ}d–G¡
