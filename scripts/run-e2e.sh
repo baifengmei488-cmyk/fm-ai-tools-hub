@@ -66,4 +66,4 @@ FRONTEND_PID="$!"
 
 wait_for_url "http://127.0.0.1:$FRONTEND_PORT" "Frontend"
 
-PLAYWRIGHT_BASE_URL="http://127.0.0.1:$FRONTEND_PORT" npm run e2e
+PLAYWRIGHT_BASE_URL="http://127.0.0.1:$FRONTEND_PORT" PLAYWRIGHT_API_BASE="http://127.0.0.1:$BACKEND_PORT" npm run e2e

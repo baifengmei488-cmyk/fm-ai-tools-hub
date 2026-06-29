@@ -6,6 +6,7 @@ import { ToolDetailPage } from './pages/ToolDetailPage';
 import { WorkflowPage } from './pages/WorkflowPage';
 import { GuideNavigationPage } from './pages/GuideNavigationPage';
 import { UpdateLogPage } from './pages/UpdateLogPage';
+import { AboutPage } from './pages/AboutPage';
 import { LoginPage } from './pages/LoginPage';
 import { AdminToolsPage } from './pages/admin/AdminToolsPage';
 import { ImportPage } from './pages/admin/ImportPage';
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: 'commands', element: <Navigate to="/workflows?tab=commands" replace /> },
       { path: 'guides', element: <GuideNavigationPage /> },
       { path: 'updates', element: <UpdateLogPage /> },
+      { path: 'about', element: <AboutPage /> },
       { path: 'login', element: <LoginPage /> },
       { path: 'admin/tools', element: <AdminToolsPage /> },
       { path: 'admin/imports', element: <ImportPage /> },
