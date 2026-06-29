@@ -30,6 +30,15 @@ function sourceSummary(log: UpdateLogEntry) {
   return overflow > 0 ? `${titles.join('、')} +${overflow}` : titles.join('、');
 }
 
+function executionReportCount(log: UpdateLogEntry) {
+  return log.execution_report.length > 0 ? 1 : 0;
+}
+
+function updateRecordCount(log: UpdateLogEntry) {
+  const detailCount = log.changes.reduce((total, change) => total + change.change_details.length, 0);
+  return detailCount > 0 ? detailCount : log.changes.length;
+}
+
 function ChangeBucket({ label, slugs = [], className }: { label: string; slugs?: string[]; className: string }) {
   if (slugs.length === 0) return null;
 
@@ -37,8 +46,8 @@ function ChangeBucket({ label, slugs = [], className }: { label: string; slugs?:
     <div>
       <p className="text-xs font-bold uppercase tracking-wide text-slate-500">{label}</p>
       <div className="mt-2 flex flex-wrap gap-2">
-        {slugs.map((slug) => (
-          <span key={`${label}-${slug}`} className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${className}`}>
+        {slugs.map((slug, index) => (
+          <span key={`${label}-${slug}-${index}`} className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${className}`}>
             {slug}
           </span>
         ))}
@@ -99,8 +108,8 @@ function ExecutionReportValue({ value }: { value: string }) {
 
   return (
     <span className="flex min-w-0 flex-wrap gap-1.5">
-      {parts.map((part) => (
-        <span key={part} className="rounded-full bg-slate-50 px-2 py-0.5 font-mono text-xs text-slate-700 ring-1 ring-slate-100">
+      {parts.map((part, index) => (
+        <span key={`${part}-${index}`} className="rounded-full bg-slate-50 px-2 py-0.5 font-mono text-xs text-slate-700 ring-1 ring-slate-100">
           {part}
         </span>
       ))}
@@ -142,10 +151,10 @@ function ChangeDetailList({ details = [] }: { details?: UpdateLogChangeDetail[] 
         <span>来源</span>
       </div>
       <div className="divide-y divide-blue-100">
-        {details.map((detail) => {
+        {details.map((detail, index) => {
           const pageLink = pagePathLink(detail.page_path);
           return (
-            <div key={`${detail.tool_slug}-${detail.page_path}-${detail.section}-${detail.field}-${detail.change_type}`} className="grid gap-2 px-3 py-3 text-sm leading-6 text-blue-950 md:grid-cols-[1.1fr_1.1fr_0.9fr_1.2fr_0.7fr_1fr]">
+            <div key={`${detail.tool_slug}-${detail.page_path}-${detail.section}-${detail.field}-${detail.change_type}-${index}`} className="grid gap-2 px-3 py-3 text-sm leading-6 text-blue-950 md:grid-cols-[1.1fr_1.1fr_0.9fr_1.2fr_0.7fr_1fr]">
               <div className="min-w-0 break-words">
                 {detail.tool_slug ? (
                   <Link className="font-semibold text-blue-700 hover:text-blue-900" to={`/tools/${detail.tool_slug}`}>
@@ -189,8 +198,8 @@ function ChangeList({ changes }: { changes: UpdateLogChange[] }) {
 
   return (
     <div className="space-y-3">
-      {changes.map((change) => (
-        <div key={`${change.title}-${change.change_type}`} className="rounded-xl bg-white p-4 text-sm leading-6 text-blue-950 ring-1 ring-blue-100">
+      {changes.map((change, index) => (
+        <div key={`${change.title}-${change.change_type}-${index}`} className="rounded-xl bg-white p-4 text-sm leading-6 text-blue-950 ring-1 ring-blue-100">
           <p className="font-semibold">{change.title}</p>
           <p className="break-words">{change.description}</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
@@ -200,14 +209,14 @@ function ChangeList({ changes }: { changes: UpdateLogChange[] }) {
           </div>
           {change.page_paths.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
-              {change.page_paths.map((path) => {
+              {change.page_paths.map((path, index) => {
                 const pageLink = pagePathLink(path);
                 return pageLink ? (
-                  <Link key={path} className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 hover:text-blue-900" to={pageLink.href}>
+                  <Link key={`${path}-${index}`} className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 hover:text-blue-900" to={pageLink.href}>
                     {pageLink.label}
                   </Link>
                 ) : (
-                  <span key={path} className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                  <span key={`${path}-${index}`} className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
                     {path}
                   </span>
                 );
@@ -302,7 +311,7 @@ function UpdateLogArticle({ log }: { log: UpdateLogEntry }) {
             </div>
           </div>
 
-          <CollapsibleSection title="执行详情" summary={`${log.execution_report.length} 条报告，${log.changes.length} 条更新记录。`} tone="blue">
+          <CollapsibleSection title="执行详情" summary={`${executionReportCount(log)} 份报告，${updateRecordCount(log)} 条更新记录。`} tone="blue">
             <ExecutionDetails log={log} />
           </CollapsibleSection>
         </div>

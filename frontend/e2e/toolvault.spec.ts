@@ -228,6 +228,8 @@ test('public users can browse update logs', async ({ page }) => {
   await expect(page.getByRole('button', { name: /展开执行前页面内容清单/ })).toHaveCount(0);
   await expect(page.getByText('/tools/{slug}')).toHaveCount(0);
   await expect(page.getByText('说明安装后怎么使用')).toHaveCount(0);
+  await expect(page.getByText(/1 份报告，\d+ 条更新记录。/)).toBeVisible();
+  await expect(page.getByText(/\d+ 条报告/)).toHaveCount(0);
   await expect(page.getByRole('button', { name: /展开执行详情/ })).toBeVisible();
   await expect(page.getByText(/质量结论：/)).toHaveCount(0);
   await page.getByRole('button', { name: /展开执行详情/ }).click();
