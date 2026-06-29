@@ -6,6 +6,7 @@ __pycache__/
 .mypy_cache/
 .coverage
 htmlcov/
+backend/*.db
 node_modules/
 dist/
 build/

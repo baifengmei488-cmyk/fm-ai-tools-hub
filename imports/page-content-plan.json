@@ -8,8 +8,26 @@
       "工具类型筛选位于列表上方左侧，默认展示全部，并覆盖当前 payload 内所有工具类型。",
       "卡片入口必须能跳转到对应工具详情页。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   },
   {
     "page_path": "/tools/{slug}",
@@ -20,8 +38,26 @@
       "列出适用场景、典型输入、典型输出和适合配合使用的工具。",
       "有官方主页或公开文档时记录安全的公开来源。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   },
   {
     "page_path": "/tools/{slug}",
@@ -35,8 +71,26 @@
       "包含常用命令、操作步骤、注意事项、排错方式和与 Claude Code 协作的提示词示例。",
       "记录具体修改了使用指南的哪个章节或字段，方便更新日志展示 guide content 的 before/after。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   },
   {
     "page_path": "/tools/{slug}",
@@ -47,8 +101,26 @@
       "命令示例不得包含真实 API Key、token、cookie、密码、私钥或生产连接串。",
       "涉及数据库、爬取、浏览器自动化或外部服务时说明授权和只读/安全限制。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   },
   {
     "page_path": "/updates",
@@ -59,8 +131,26 @@
       "来源只记录公开官方文档、授权资料或本机安全扫描摘要。",
       "敏感扫描失败时隐藏原始敏感内容，只展示安全摘要和发现数量。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   },
   {
     "page_path": "/updates",
@@ -71,8 +161,26 @@
       "展示具体修改了哪个工具、哪个页面、哪个栏目、哪个字段。",
       "页面路径和工具 slug 能跳转时必须提供站内链接。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   },
   {
     "page_path": "/workflows",
@@ -83,8 +191,26 @@
       "涉及到的工具必须链接到具体工具详情页。",
       "每天更新时检查是否有新工具能加入已有工作流。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   },
   {
     "page_path": "/workflows",
@@ -95,8 +221,26 @@
       "提示词要包含输入占位、期望输出、验证方式和安全限制。",
       "涉及工具名称时必须能引导用户跳转到工具详情页。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   },
   {
     "page_path": "/workflows",
@@ -107,8 +251,26 @@
       "命令示例使用占位符，不展示真实密钥或本机敏感路径。",
       "每天更新时检查新安装 MCP、plugin、CLI 是否需要补充命令。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   },
   {
     "page_path": "/guides",
@@ -119,7 +281,25 @@
       "提供按任务选择工具的导航说明，而不只是工具列表。",
       "总结性说明需要链接到相关工具详情页和工作流页。"
     ],
-    "tool_slugs": [],
-    "status": "planned"
+    "tool_slugs": [
+      "claude-code",
+      "context7-mcp",
+      "firecrawl-mcp",
+      "frontend-design",
+      "github-mcp",
+      "mysql-mcp",
+      "notion-mcp",
+      "openspec",
+      "picgo",
+      "playwright-mcp",
+      "sentry-mcp",
+      "skill-creator",
+      "spec-kit",
+      "superpowers-skills",
+      "time-mcp",
+      "ui-ux-pro-max",
+      "uv"
+    ],
+    "status": "refreshed"
   }
 ]

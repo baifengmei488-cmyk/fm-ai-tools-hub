@@ -85,7 +85,7 @@ async function login(page: import('@playwright/test').Page) {
   await expect(page).toHaveURL(/\/admin\/tools$/);
 }
 
-test('homepage recommendation wheel advances once per scroll gesture', async ({ page }) => {
+test('homepage recommendation scroll stays inside the card and changes recommendations', async ({ page }) => {
   await page.route('**/api/page-content', async (route) => {
     await route.fulfill({
       json: {
@@ -107,20 +107,24 @@ test('homepage recommendation wheel advances once per scroll gesture', async ({ 
 
   await page.goto('/');
   await expect(page.getByText('第 1 条推荐')).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 140));
+  const initialPageScroll = await page.evaluate(() => window.scrollY);
   const recommendationCard = page.getByLabel('每日推荐卡片');
-  const wheelRecommendation = async () => {
-    await recommendationCard.evaluate((element) => {
-      element.dispatchEvent(new WheelEvent('wheel', { deltaY: 80, bubbles: true, cancelable: true }));
-    });
+  const scrollRecommendation = async (index: number) => {
+    await recommendationCard.evaluate((element, targetIndex) => {
+      element.scrollTo({ top: element.clientHeight * targetIndex, behavior: 'instant' });
+    }, index);
   };
-  await wheelRecommendation();
+
+  await scrollRecommendation(1);
   await expect(page.getByText('第 2 条推荐')).toBeVisible();
-  await page.waitForTimeout(500);
-  await wheelRecommendation();
-  await page.waitForTimeout(500);
-  await wheelRecommendation();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(initialPageScroll);
+
+  await scrollRecommendation(2);
+  await expect(page.getByText('第 3 条推荐')).toBeVisible();
+  await scrollRecommendation(1);
   await expect(page.getByText('第 2 条推荐')).toBeVisible();
-  await expect(page.getByText('第 3 条推荐')).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(initialPageScroll);
 });
 
 test('public users can browse imported public tool details', async ({ page }) => {
@@ -260,6 +264,55 @@ test('public users can browse guide page and legacy workflow redirects', async (
   await expect(page.getByRole('heading', { name: '工具使用导航' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '安全注意事项' })).toBeVisible();
   await expect(page.locator('a[href^="/tools/"]').first()).toBeVisible();
+});
+
+test('public users can browse the editorial personal homepage and existing content stays populated', async ({ page }) => {
+  await page.goto('/about');
+
+  await expect(page.getByText('FM Personal Portfolio')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '在复杂业务系统里，把需求、质量、流程和工具连接起来。' })).toBeVisible();
+  await expect(page.getByRole('img', { name: 'FM 抽象人物剪影' })).toBeVisible();
+  await expect(page.getByText('可验证 · 可补跑 · 可交接 · 可复用')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '不是项目罗列，而是复杂问题的处理证据。' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'RPA 自动化项目群' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'ToolVault / FM AI Tools Hub' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '我真正擅长的，不是单点技能，而是把复杂事情推进到可交付。' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '能力不是标签，而是有项目证据的组合。' })).toBeVisible();
+  await expect(page.getByText('write218@163.com')).toHaveCount(1);
+  await expect(page.getByText('bfm_135')).toHaveCount(1);
+  await expect(page.getByText('白凤梅')).toHaveCount(0);
+  await expect(page.getByText(/电话|手机/)).toHaveCount(0);
+  await expect(page.getByText(/求职|找工作|投递/)).toHaveCount(0);
+  await expect(page.getByText(/下载简历|查看简历/)).toHaveCount(0);
+
+  const toolsResponse = await page.request.get('http://127.0.0.1:8002/api/tools');
+  expect(toolsResponse.ok()).toBeTruthy();
+  const tools = await toolsResponse.json();
+  expect(Array.isArray(tools)).toBeTruthy();
+  expect(tools.length).toBeGreaterThan(0);
+
+  const pageContentResponse = await page.request.get('http://127.0.0.1:8002/api/page-content');
+  expect(pageContentResponse.ok()).toBeTruthy();
+  const pageContent = await pageContentResponse.json();
+  for (const section of [
+    'home_highlights',
+    'workflows',
+    'tool_combinations',
+    'prompt_groups',
+    'command_groups',
+    'guide_choices',
+    'guide_workflow_tips',
+    'guide_safety_notes',
+  ]) {
+    expect(Array.isArray(pageContent[section])).toBeTruthy();
+    expect(pageContent[section].length).toBeGreaterThan(0);
+  }
+
+  const updateLogsResponse = await page.request.get('http://127.0.0.1:8002/api/update-logs');
+  expect(updateLogsResponse.ok()).toBeTruthy();
+  const updateLogs = await updateLogsResponse.json();
+  expect(Array.isArray(updateLogs)).toBeTruthy();
+  expect(updateLogs.length).toBeGreaterThan(0);
 });
 
 test('public users can filter tools by type radio buttons', async ({ page }) => {

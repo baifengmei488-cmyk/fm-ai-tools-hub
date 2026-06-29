@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePageContent, type PageContentStatus } from '../api/usePageContent';
 import { ToolRefLink } from '../components/ToolRefLink';
@@ -27,42 +27,26 @@ function HighlightStatus({ status }: { status: PageContentStatus }) {
 export function HomePage() {
   const { pageContent, status } = usePageContent();
   const [activeHighlightIndex, setActiveHighlightIndex] = useState(0);
-  const touchStartY = useRef<number | null>(null);
-  const wheelLock = useRef(false);
-  const wheelUnlockTimer = useRef<number | null>(null);
+  const highlightScroller = useRef<HTMLDivElement | null>(null);
   const highlights = pageContent.home_highlights;
   const currentHighlightIndex = Math.min(activeHighlightIndex, Math.max(highlights.length - 1, 0));
-  const activeHighlight = highlights[currentHighlightIndex];
 
-  useEffect(() => {
-    return () => {
-      if (wheelUnlockTimer.current !== null) {
-        window.clearTimeout(wheelUnlockTimer.current);
-      }
-    };
-  }, []);
-
-  function releaseWheelLockAfterGesture() {
-    if (wheelUnlockTimer.current !== null) {
-      window.clearTimeout(wheelUnlockTimer.current);
+  function scrollToHighlight(index: number) {
+    const scroller = highlightScroller.current;
+    const target = scroller?.children.item(index);
+    if (target instanceof HTMLElement) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-    wheelUnlockTimer.current = window.setTimeout(() => {
-      wheelLock.current = false;
-      wheelUnlockTimer.current = null;
-    }, 650);
+    setActiveHighlightIndex(index);
   }
 
-  function showNextHighlight() {
-    if (highlights.length < 2) {
+  function syncActiveHighlightFromScroll() {
+    const scroller = highlightScroller.current;
+    if (!scroller) {
       return;
     }
-    if (wheelLock.current) {
-      releaseWheelLockAfterGesture();
-      return;
-    }
-    wheelLock.current = true;
-    setActiveHighlightIndex((current) => (current + 1) % highlights.length);
-    releaseWheelLockAfterGesture();
+    const nextIndex = Math.round(scroller.scrollTop / Math.max(scroller.clientHeight, 1));
+    setActiveHighlightIndex(Math.min(Math.max(nextIndex, 0), Math.max(highlights.length - 1, 0)));
   }
 
   return (
@@ -80,7 +64,7 @@ export function HomePage() {
           </div>
         </div>
 
-        <aside className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
+        <aside aria-label="今日推荐模块" className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-100">
           <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
             <div>
               <p className="text-xs font-black uppercase tracking-wide text-blue-700">Daily Refresh</p>
@@ -91,52 +75,33 @@ export function HomePage() {
           <div className="mt-3 space-y-2">
             <HighlightStatus status={status} />
             {status === 'ready' && highlights.length === 0 && <p className="text-sm text-slate-600">暂无每日推荐内容。</p>}
-            {status === 'ready' && activeHighlight && (
+            {status === 'ready' && highlights.length > 0 && (
               <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-stretch">
                 <div
+                  ref={highlightScroller}
                   aria-label="每日推荐卡片"
-                  className="relative min-h-48 overscroll-contain"
-                  onWheel={(event) => {
-                    if (event.deltaY > 0) {
-                      event.preventDefault();
-                      showNextHighlight();
-                    }
-                  }}
-                  onTouchStart={(event) => {
-                    touchStartY.current = event.touches[0]?.clientY ?? null;
-                  }}
-                  onTouchEnd={(event) => {
-                    const startY = touchStartY.current;
-                    const endY = event.changedTouches[0]?.clientY;
-                    touchStartY.current = null;
-                    if (startY !== null && endY !== undefined && startY - endY > 32) {
-                      showNextHighlight();
-                    }
-                  }}
+                  className="h-48 overflow-y-auto overscroll-contain scroll-smooth snap-y snap-mandatory rounded-2xl pr-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  onScroll={syncActiveHighlightFromScroll}
                 >
-                  {highlights.length > 1 && (
-                    <>
-                      <div className="absolute inset-x-4 top-4 h-full rounded-2xl bg-slate-100 ring-1 ring-slate-100" />
-                      <div className="absolute inset-x-8 top-8 h-full rounded-2xl bg-slate-50 ring-1 ring-slate-100" />
-                    </>
-                  )}
-                  <article className="relative rounded-2xl bg-slate-50 p-4 shadow-sm ring-1 ring-slate-100">
-                    <div className="flex gap-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-sm font-black text-white">{currentHighlightIndex + 1}</span>
-                      <div className="min-w-0">
-                        <h3 className="text-base font-black text-slate-950">{activeHighlight.title}</h3>
-                        <p className="mt-1 line-clamp-4 text-sm leading-6 text-slate-600">{activeHighlight.description}</p>
+                  {highlights.map((highlight, index) => (
+                    <article key={highlight.title} className="flex h-48 snap-start scroll-mt-0 flex-col justify-center rounded-2xl bg-slate-50 p-4 shadow-sm ring-1 ring-slate-100">
+                      <div className="flex gap-3">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-sm font-black text-white">{index + 1}</span>
+                        <div className="min-w-0">
+                          <h3 className="text-base font-black text-slate-950">{highlight.title}</h3>
+                          <p className="mt-1 line-clamp-4 text-sm leading-6 text-slate-600">{highlight.description}</p>
+                        </div>
                       </div>
-                    </div>
-                    {activeHighlight.tools.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1.5 pl-12">
-                        {activeHighlight.tools.slice(0, 4).map((tool) => (
-                          <ToolRefLink key={`${activeHighlight.title}-${tool.slug || tool.name}`} className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-100 hover:bg-blue-50 hover:text-blue-700" tool={tool} />
-                        ))}
-                        {activeHighlight.tools.length > 4 && <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-100">+{activeHighlight.tools.length - 4}</span>}
-                      </div>
-                    )}
-                  </article>
+                      {highlight.tools.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1.5 pl-12">
+                          {highlight.tools.slice(0, 4).map((tool) => (
+                            <ToolRefLink key={`${highlight.title}-${tool.slug || tool.name}`} className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-100 hover:bg-blue-50 hover:text-blue-700" tool={tool} />
+                          ))}
+                          {highlight.tools.length > 4 && <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-500 ring-1 ring-slate-100">+{highlight.tools.length - 4}</span>}
+                        </div>
+                      )}
+                    </article>
+                  ))}
                 </div>
                 {highlights.length > 1 && (
                   <div className="flex items-center justify-center gap-1.5 sm:flex-col" aria-label="每日推荐选择">
@@ -149,7 +114,7 @@ export function HomePage() {
                           aria-label={`查看第 ${index + 1} 条推荐`}
                           aria-pressed={isActive}
                           className={`h-2.5 rounded-full transition ${isActive ? 'w-7 bg-blue-600 sm:h-7 sm:w-2.5' : 'w-2.5 bg-slate-300 hover:bg-blue-300'}`}
-                          onClick={() => setActiveHighlightIndex(index)}
+                          onClick={() => scrollToHighlight(index)}
                         />
                       );
                     })}

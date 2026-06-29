@@ -5,6 +5,7 @@ const navItems = [
   { to: '/workflows', label: '工作流' },
   { to: '/guides', label: '使用指南' },
   { to: '/updates', label: '更新日志' },
+  { to: '/about', label: '关于 FM' },
   { to: '/login', label: '后台登录' },
 ];
 
