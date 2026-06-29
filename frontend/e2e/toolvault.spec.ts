@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+const apiBase = process.env.PLAYWRIGHT_API_BASE ?? 'http://127.0.0.1:8000';
+
 const sampleImportPayload = {
   source: 'claude_local_scan',
   generated_at: '2026-06-18T10:00:00+08:00',
@@ -285,13 +287,13 @@ test('public users can browse the editorial personal homepage and existing conte
   await expect(page.getByText(/求职|找工作|投递/)).toHaveCount(0);
   await expect(page.getByText(/下载简历|查看简历/)).toHaveCount(0);
 
-  const toolsResponse = await page.request.get('http://127.0.0.1:8002/api/tools');
+  const toolsResponse = await page.request.get(`${apiBase}/api/tools`);
   expect(toolsResponse.ok()).toBeTruthy();
   const tools = await toolsResponse.json();
   expect(Array.isArray(tools)).toBeTruthy();
   expect(tools.length).toBeGreaterThan(0);
 
-  const pageContentResponse = await page.request.get('http://127.0.0.1:8002/api/page-content');
+  const pageContentResponse = await page.request.get(`${apiBase}/api/page-content`);
   expect(pageContentResponse.ok()).toBeTruthy();
   const pageContent = await pageContentResponse.json();
   for (const section of [
@@ -308,7 +310,7 @@ test('public users can browse the editorial personal homepage and existing conte
     expect(pageContent[section].length).toBeGreaterThan(0);
   }
 
-  const updateLogsResponse = await page.request.get('http://127.0.0.1:8002/api/update-logs');
+  const updateLogsResponse = await page.request.get(`${apiBase}/api/update-logs`);
   expect(updateLogsResponse.ok()).toBeTruthy();
   const updateLogs = await updateLogsResponse.json();
   expect(Array.isArray(updateLogs)).toBeTruthy();
