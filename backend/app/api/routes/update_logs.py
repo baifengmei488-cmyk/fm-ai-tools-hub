@@ -15,6 +15,7 @@ from app.schemas.update_log import (
     UpdateLogToolRead,
     UpdateLogValidationRead,
 )
+from app.services.import_tools import _change_summary, _guide_map, _payload_tools_by_slug, parse_guide_content_field
 
 router = APIRouter(prefix="/api/update-logs", tags=["update-logs"])
 BEIJING_TZ = ZoneInfo("Asia/Shanghai")
@@ -59,6 +60,52 @@ def _public_tools(db: Session, raw_tools: list[dict[str, Any]]) -> list[UpdateLo
     ]
 
 
+def _guide_content(tool: dict[str, Any], title: str) -> str:
+    for (guide_title, _guide_type), guide in _guide_map(tool).items():
+        if guide_title == title:
+            return str(guide.get("content_markdown", ""))
+    return ""
+
+
+def _has_legacy_guide_summary_repair_candidate(changes: list[dict[str, Any]]) -> bool:
+    for change in changes:
+        for detail in _as_list(change.get("change_details")):
+            field = detail.get("field")
+            if isinstance(field, str) and parse_guide_content_field(field) is not None and detail.get("before") == detail.get("after"):
+                return True
+    return False
+
+
+def _repair_legacy_change_details(db: Session, batch: ImportBatch) -> list[dict[str, Any]]:
+    changes = _as_list(batch.raw_payload.get("changes"))
+    if not _has_legacy_guide_summary_repair_candidate(changes):
+        return changes
+
+    previous_batch = db.query(ImportBatch).filter(ImportBatch.id < batch.id, ImportBatch.status == "imported").order_by(ImportBatch.id.desc()).first()
+    if previous_batch is None:
+        return changes
+
+    previous_tools = _payload_tools_by_slug(previous_batch.raw_payload)
+    current_tools = _payload_tools_by_slug(batch.raw_payload)
+    repaired_changes: list[dict[str, Any]] = []
+    for change in changes:
+        repaired_details = []
+        for detail in _as_list(change.get("change_details")):
+            field = detail.get("field")
+            slug = detail.get("tool_slug")
+            title = parse_guide_content_field(field) if isinstance(field, str) else None
+            if title is not None and isinstance(slug, str) and detail.get("before") == detail.get("after"):
+                before_summary, after_summary = _change_summary(
+                    _guide_content(previous_tools.get(slug, {}), title),
+                    _guide_content(current_tools.get(slug, {}), title),
+                )
+                if before_summary != after_summary:
+                    detail = {**detail, "before": before_summary, "after": after_summary}
+            repaired_details.append(detail)
+        repaired_changes.append({**change, "change_details": repaired_details})
+    return repaired_changes
+
+
 def _entry_from_batch(db: Session, batch: ImportBatch) -> UpdateLogEntryRead:
     raw_tools = _as_list(batch.raw_payload.get("tools"))
     return UpdateLogEntryRead(
@@ -70,7 +117,7 @@ def _entry_from_batch(db: Session, batch: ImportBatch) -> UpdateLogEntryRead:
         generated_at=str(batch.raw_payload.get("generated_at", "")),
         content_plan=[UpdateLogContentPlanItemRead.model_validate(item) for item in _as_list(batch.raw_payload.get("content_plan"))],
         sources=[UpdateLogSourceRead.model_validate(source) for source in _as_list(batch.raw_payload.get("sources"))],
-        changes=[UpdateLogChangeRead.model_validate(change) for change in _as_list(batch.raw_payload.get("changes"))],
+        changes=[UpdateLogChangeRead.model_validate(change) for change in _repair_legacy_change_details(db, batch)],
         execution_report=_as_string_list(batch.raw_payload.get("execution_report")),
         affected_tools=_public_tools(db, raw_tools),
         guide_count=sum(len(_as_list(tool.get("guides"))) for tool in raw_tools),

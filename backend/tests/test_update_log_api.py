@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi.testclient import TestClient
+from sqlalchemy import event
 
 from app.main import app
 from app.models import ImportBatch
@@ -196,6 +197,52 @@ def test_update_logs_return_empty_content_plan_and_change_details_for_legacy_log
     entry = response.json()[0]
     assert entry["content_plan"] == []
     assert entry["changes"][0]["change_details"] == []
+
+
+def test_update_logs_skip_legacy_repair_query_without_equal_guide_summaries(db_session):
+    db_session.add(ImportBatch(source="previous-source", status="imported", summary="created=1, updated=0", raw_payload=_payload(source="previous-source")))
+    db_session.add(ImportBatch(source="current-source", status="imported", summary="created=0, updated=1", raw_payload=_payload(source="current-source")))
+    db_session.commit()
+    client = TestClient(app)
+    queries: list[str] = []
+
+    def _capture_sql(_conn, _cursor, statement, _parameters, _context, _executemany):
+        queries.append(statement)
+
+    event.listen(db_session.bind, "before_cursor_execute", _capture_sql)
+    try:
+        response = client.get("/api/update-logs")
+    finally:
+        event.remove(db_session.bind, "before_cursor_execute", _capture_sql)
+
+    assert response.status_code == 200
+    assert not any("imports.id <" in query for query in queries)
+
+
+def test_update_logs_repair_legacy_equal_guide_summaries(db_session):
+    previous_payload = _payload(source="previous-source")
+    previous_payload["tools"][0]["guides"][0]["content_markdown"] = "# Guide\n\n" + "旧内容说明。" * 80
+    current_payload = _payload(source="current-source")
+    appended = "## 新增交互\n\n更新日志表格现在能展示主要更新内容。"
+    current_payload["tools"][0]["guides"][0]["content_markdown"] = f"{previous_payload['tools'][0]['guides'][0]['content_markdown']}\n\n{appended}"
+    legacy_summary = "# Guide\n\n" + "旧内容说明。" * 20 + "..."
+    current_payload["changes"][0]["change_details"][0]["before"] = legacy_summary
+    current_payload["changes"][0]["change_details"][0]["after"] = legacy_summary
+
+    db_session.add(ImportBatch(source="previous-source", status="imported", summary="created=1, updated=0", raw_payload=previous_payload))
+    db_session.flush()
+    db_session.add(ImportBatch(source="current-source", status="imported", summary="created=0, updated=1", raw_payload=current_payload))
+    db_session.commit()
+    client = TestClient(app)
+
+    response = client.get("/api/update-logs")
+
+    assert response.status_code == 200
+    detail = response.json()[0]["changes"][0]["change_details"][0]
+    assert detail["before"] != detail["after"]
+    assert detail["after"].startswith("新增内容：")
+    assert "新增交互" in detail["after"]
+    assert "主要更新内容" in detail["after"]
 
 
 def test_update_logs_are_newest_first():

@@ -147,6 +147,25 @@ def test_import_records_guide_content_change_detail(db_session):
     )
 
 
+def test_import_summarizes_appended_guide_content_with_new_section(db_session):
+    first = _payload()
+    original_content = "# Guide\n\n" + "旧内容说明。" * 80
+    appended_section = "## 2026-07-07 交互优化\n\n更新日志表格长文本现在两行截断，hover 或 focus 时显示摘要。"
+    second = _payload()
+    first.tools[0].guides[0].content_markdown = original_content
+    second.tools[0].guides[0].content_markdown = f"{original_content}\n\n{appended_section}"
+
+    import_tool_payload(db_session, first)
+    import_tool_payload(db_session, second, remove_missing=True)
+
+    batch = db_session.query(ImportBatch).order_by(ImportBatch.id.desc()).first()
+    details = batch.raw_payload["changes"][0]["change_details"]
+    detail = next(item for item in details if item["field"] == "guides.使用指南.content_markdown")
+    assert "2026-07-07 交互优化" in detail["after"]
+    assert "两行截断" in detail["after"]
+    assert detail["after"].startswith("新增内容：")
+
+
 def test_import_generates_page_content_for_visible_pages(db_session):
     payload = _payload()
     import_tool_payload(db_session, payload)

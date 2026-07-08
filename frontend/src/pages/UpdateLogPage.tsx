@@ -137,12 +137,30 @@ function ExecutionReportRows({ lines = [] }: { lines?: string[] }) {
   );
 }
 
+function TruncatedCell({ value, className = '' }: { value?: string; className?: string }) {
+  const hasValue = Boolean(value);
+  const displayValue = hasValue ? value : '-';
+
+  return (
+    <span className={`group relative block min-w-0 ${className}`} tabIndex={hasValue ? 0 : undefined}>
+      <span className="line-clamp-2 max-h-12 overflow-hidden break-words leading-6">
+        {displayValue}
+      </span>
+      {hasValue && (
+        <span className="pointer-events-auto absolute left-0 top-full z-30 hidden max-h-64 w-80 max-w-[min(80vw,32rem)] overflow-auto rounded-xl border border-blue-100 bg-white p-3 text-xs leading-5 text-slate-700 shadow-xl ring-1 ring-slate-900/5 group-hover:block group-focus:block">
+          {displayValue}
+        </span>
+      )}
+    </span>
+  );
+}
+
 function ChangeDetailList({ details = [] }: { details?: UpdateLogChangeDetail[] }) {
   if (details.length === 0) return null;
 
   return (
-    <div className="mt-4 overflow-hidden rounded-xl bg-white ring-1 ring-blue-100">
-      <div className="grid gap-2 bg-blue-100/60 px-3 py-2 text-xs font-bold uppercase tracking-wide text-blue-900 md:grid-cols-[1.1fr_1.1fr_0.9fr_1.2fr_0.7fr_1fr]">
+    <div className="mt-4 rounded-xl bg-white ring-1 ring-blue-100">
+      <div className="grid gap-2 rounded-t-xl bg-blue-100/60 px-3 py-2 text-xs font-bold uppercase tracking-wide text-blue-900 md:grid-cols-[1.1fr_1.1fr_0.9fr_1.2fr_0.7fr_1fr]">
         <span>工具</span>
         <span>页面</span>
         <span>栏目</span>
@@ -174,13 +192,13 @@ function ChangeDetailList({ details = [] }: { details?: UpdateLogChangeDetail[] 
                 )}
               </div>
               <span className="min-w-0 break-words">{detail.section}</span>
-              <span className="min-w-0 break-words font-mono text-xs">{detail.field}</span>
+              <TruncatedCell value={detail.field} className="font-mono text-xs" />
               <span className="min-w-0 break-words">{detail.change_type}</span>
-              <span className="min-w-0 break-words">{detail.source_titles.length > 0 ? detail.source_titles.join('、') : '-'}</span>
+              <TruncatedCell value={detail.source_titles.join('、')} />
               {(detail.before || detail.after) && (
-                <div className="min-w-0 rounded-lg bg-blue-50 p-2 text-xs leading-5 text-blue-900 md:col-span-6">
-                  {detail.before && <p className="break-words">修改前：{detail.before}</p>}
-                  {detail.after && <p className="break-words">修改后：{detail.after}</p>}
+                <div className="min-w-0 space-y-2 rounded-lg bg-blue-50 p-2 text-xs leading-5 text-blue-900 md:col-span-6">
+                  {detail.before && <TruncatedCell value={`修改前：${detail.before}`} />}
+                  {detail.after && <TruncatedCell value={`修改后：${detail.after}`} />}
                 </div>
               )}
             </div>

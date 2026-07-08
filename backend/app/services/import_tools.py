@@ -142,6 +142,26 @@ def _safe_text(value: Any) -> str:
     return text if len(text) <= 240 else f"{text[:237]}..."
 
 
+def _change_summary(before: Any, after: Any) -> tuple[str, str]:
+    before_text = "" if before is None else str(before)
+    after_text = "" if after is None else str(after)
+    if before_text and after_text.startswith(before_text):
+        appended = after_text[len(before_text):].strip()
+        if appended:
+            return _safe_text(before_text), _safe_text(f"新增内容：{appended}")
+    return _safe_text(before_text), _safe_text(after_text)
+
+
+def guide_content_field(title: str) -> str:
+    return f"guides.{title}.content_markdown"
+
+
+def parse_guide_content_field(field: str) -> str | None:
+    if field.startswith("guides.") and field.endswith(".content_markdown"):
+        return field.removeprefix("guides.").removesuffix(".content_markdown")
+    return None
+
+
 def _source_titles(payload_data: dict[str, Any]) -> list[str]:
     return [source["title"] for source in _as_sources(payload_data) if isinstance(source.get("title"), str)]
 
@@ -425,16 +445,20 @@ def _tool_change_details(
             current_guide = current_guides.get(guide_key, {})
             title = guide_key[0]
             if previous_guide.get("content_markdown") != current_guide.get("content_markdown"):
+                before_summary, after_summary = _change_summary(
+                    previous_guide.get("content_markdown", ""),
+                    current_guide.get("content_markdown", ""),
+                )
                 details.append(
                     {
                         "tool_slug": slug,
                         "tool_name": tool_name,
                         "page_path": f"/tools/{slug}",
                         "section": "使用指南",
-                        "field": f"guides.{title}.content_markdown",
+                        "field": guide_content_field(title),
                         "change_type": "updated" if previous_guide and current_guide else ("added" if current_guide else "deleted"),
-                        "before": _safe_text(previous_guide.get("content_markdown", "")),
-                        "after": _safe_text(current_guide.get("content_markdown", "")),
+                        "before": before_summary,
+                        "after": after_summary,
                         "source_titles": source_titles,
                     }
                 )
